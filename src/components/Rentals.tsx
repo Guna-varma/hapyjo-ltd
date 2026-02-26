@@ -1,6 +1,7 @@
 import { useFadeInOnScroll } from "@/hooks/use-fade-in";
 import { Button } from "@/components/ui/button";
 import { Clock, Shield, TrendingUp } from "lucide-react";
+import rentalsFleet from "@/assets/rentals-fleet.jpg";
 
 const features = [
   {
@@ -41,9 +42,9 @@ const Rentals = () => {
             </h2>
             <div className="mt-4 h-px w-16 bg-accent" />
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Access trucks, earthmoving equipment, and construction machinery on flexible 
-              rental terms. Whether you need a single vehicle for a day or an entire fleet 
-              for a multi-month project, Hapyjo delivers — professionally maintained, 
+              Access trucks, earthmoving equipment, and construction machinery on flexible
+              rental terms. Whether you need a single vehicle for a day or an entire fleet
+              for a multi-month project, Hapyjo delivers — professionally maintained,
               competitively priced, and ready to work.
             </p>
 
@@ -63,40 +64,39 @@ const Rentals = () => {
 
             <Button
               asChild
-              className="mt-10 bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-5 text-base font-semibold"
+              className="mt-10 bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-5 text-base font-semibold shadow-lg shadow-accent/20 transition-all hover:shadow-xl hover:shadow-accent/25"
             >
               <a href="#contact">Enquire About Rentals</a>
             </Button>
           </div>
 
-          {/* Right — Visual block */}
-          <div className="relative hidden lg:block">
-            <div className="aspect-[4/5] rounded-lg bg-primary/5 border border-border overflow-hidden flex items-center justify-center">
-              <div className="text-center px-8">
-                <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-accent/10 text-accent mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10 17h4V5H2v12h3" />
-                    <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1" />
-                    <circle cx="7.5" cy="17.5" r="2.5" />
-                    <circle cx="17.5" cy="17.5" r="2.5" />
-                  </svg>
+          {/* Right — Image */}
+          <div className="relative">
+            <div className="overflow-hidden rounded-lg">
+              <img
+                src={rentalsFleet}
+                alt="Fleet of heavy-duty trucks lined up at golden hour"
+                className="h-auto w-full object-cover rounded-lg"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-foreground/5" />
+            </div>
+            {/* Decorative accent frame */}
+            <div className="absolute -bottom-4 -right-4 h-full w-full rounded-lg border-2 border-accent/20 -z-10" />
+            {/* Stats overlay */}
+            <div className="absolute -bottom-6 -left-6 rounded-lg bg-primary p-6 shadow-2xl">
+              <div className="flex gap-6">
+                <div className="text-center">
+                  <p className="font-serif text-2xl font-bold text-accent">24/7</p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-primary-foreground/60">Availability</p>
                 </div>
-                <p className="font-serif text-2xl font-bold text-foreground">Trucks &amp; Heavy Machinery</p>
-                <p className="mt-3 text-muted-foreground">Earthmoving · Construction · Logistics</p>
-                <div className="mt-6 flex justify-center gap-6">
-                  <div className="text-center">
-                    <p className="font-serif text-3xl font-bold text-accent">24/7</p>
-                    <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Availability</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-serif text-3xl font-bold text-accent">RWF</p>
-                    <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Pricing</p>
-                  </div>
+                <div className="h-auto w-px bg-primary-foreground/10" />
+                <div className="text-center">
+                  <p className="font-serif text-2xl font-bold text-accent">RWF</p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-primary-foreground/60">Pricing</p>
                 </div>
               </div>
             </div>
-            {/* Decorative accent */}
-            <div className="absolute -bottom-4 -right-4 h-full w-full rounded-lg border-2 border-accent/20 -z-10" />
           </div>
         </div>
       </div>

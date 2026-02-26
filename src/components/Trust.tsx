@@ -47,15 +47,15 @@ const Trust = () => {
           <div className="mx-auto mt-4 h-px w-16 bg-accent" />
         </div>
 
-        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className={`mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 stagger-children ${isVisible ? "is-visible" : ""}`}>
           {points.map((p) => (
-            <div key={p.title} className="text-center">
-              <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full border border-accent/30 text-accent">
-                <p.icon size={24} />
+            <div key={p.title} className="text-center group">
+              <div className="mx-auto mb-5 inline-flex h-16 w-16 items-center justify-center rounded-full border border-accent/30 text-accent transition-all duration-300 group-hover:bg-accent group-hover:text-accent-foreground group-hover:scale-110">
+                <p.icon size={26} />
               </div>
               <p className="font-serif text-3xl font-bold text-accent">{p.stat}</p>
-              <h3 className="mt-2 font-semibold text-primary-foreground">{p.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-primary-foreground/60">
+              <h3 className="mt-2 text-sm font-semibold uppercase tracking-wider text-primary-foreground">{p.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-primary-foreground/55">
                 {p.description}
               </p>
             </div>

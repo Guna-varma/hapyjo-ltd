@@ -13,10 +13,10 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <nav className="sticky top-0 z-50 border-b border-border/30 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Wordmark */}
-        <a href="#" className="font-serif text-2xl font-bold tracking-tight text-foreground">
+        <a href="#" className="font-serif text-2xl font-bold tracking-tight text-foreground transition-colors hover:text-accent">
           Hapyjo
         </a>
 
@@ -26,14 +26,14 @@ const Navbar = () => {
             <a
               key={l.href}
               href={l.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="gold-underline text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {l.label}
             </a>
           ))}
           <Button
             asChild
-            className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-md px-6"
+            className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-md px-6 shadow-md shadow-accent/20 transition-all hover:shadow-lg hover:shadow-accent/25"
           >
             <a href="#contact">Contact Us</a>
           </Button>
@@ -42,7 +42,7 @@ const Navbar = () => {
         {/* Mobile toggle */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-foreground"
+          className="md:hidden text-foreground p-1"
           aria-label="Toggle menu"
         >
           {open ? <X size={24} /> : <Menu size={24} />}
@@ -51,7 +51,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-border bg-background px-6 pb-6 md:hidden">
+        <div className="animate-fade-in border-t border-border/30 bg-background px-6 pb-6 md:hidden">
           {navLinks.map((l) => (
             <a
               key={l.href}
@@ -64,7 +64,7 @@ const Navbar = () => {
           ))}
           <Button
             asChild
-            className="mt-2 w-full bg-accent text-accent-foreground hover:bg-accent/90"
+            className="mt-3 w-full bg-accent text-accent-foreground hover:bg-accent/90"
           >
             <a href="#contact" onClick={() => setOpen(false)}>Contact Us</a>
           </Button>

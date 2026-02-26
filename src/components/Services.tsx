@@ -62,18 +62,18 @@ const Services = () => {
             What We Do
           </p>
           <h2 className="font-serif text-3xl font-bold text-foreground sm:text-4xl md:text-5xl">
-            Comprehensive Operations & Control
+            Comprehensive Operations &amp; Control
           </h2>
           <div className="mx-auto mt-4 h-px w-16 bg-accent" />
         </div>
 
-        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className={`mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 stagger-children ${isVisible ? "is-visible" : ""}`}>
           {services.map((s) => (
             <div
               key={s.title}
-              className="group rounded-lg border border-border bg-card p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
+              className="card-glow group rounded-lg border border-border bg-card p-8"
             >
-              <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-md bg-accent/10 text-accent">
+              <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-md bg-accent/10 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
                 <s.icon size={24} />
               </div>
               <h3 className="font-serif text-xl font-semibold text-foreground">
