@@ -78,7 +78,7 @@ const Navbar = () => {
                 <X size={24} className="text-foreground" />
               </button>
             </div>
-            <div className="p-6 space-y-1">
+            <div className="p-6 flex flex-col gap-0">
               {navLinks.map((l) => (
                 <a
                   key={l.href}
