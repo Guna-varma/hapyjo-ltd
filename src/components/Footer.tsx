@@ -3,12 +3,12 @@ import { COMPANY } from "@/lib/constants";
 const logoImg = new URL("../assets/Hapyjoimage.png", import.meta.url).href;
 
 const footerNavLinks = [
-  { label: "About", href: "/about.html" },
-  { label: "Services", href: "/services.html" },
-  { label: "Rentals", href: "/rentals.html" },
-  { label: "Industries", href: "/industries.html" },
-  { label: "Gallery", href: "/gallery.html" },
-  { label: "Contact", href: "/contact.html" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Rentals", href: "/rentals" },
+  { label: "Industries", href: "/industries" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const Footer = () => {
@@ -16,7 +16,7 @@ const Footer = () => {
     <footer className="bg-slate-900 text-slate-300 py-16 sm:py-20">
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
         <a
-          href="/index.html"
+          href="/"
           className="mb-10 flex shrink-0 justify-center lg:justify-start"
           aria-label="HapyJo Ltd home"
         >

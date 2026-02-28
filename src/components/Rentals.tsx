@@ -40,7 +40,7 @@ const Rentals = () => {
             {equipment.map((e) => (
               <a
                 key={e.title}
-                href="/rentals.html"
+                href="/rentals"
                 className="block rounded-xl border border-border bg-card p-4 text-left transition-[background-color,border-color] hover:bg-white hover:border-stone-dark sm:p-6"
               >
                 <span className="block h-0.5 w-12 bg-navy" aria-hidden />
@@ -57,7 +57,7 @@ const Rentals = () => {
             ))}
           </div>
           <div className="mt-10 flex justify-center lg:justify-start">
-            <a href="/contact.html" className="btn-cta">
+            <a href="/contact" className="btn-cta">
               Get Rental Quote
             </a>
           </div>

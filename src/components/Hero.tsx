@@ -58,10 +58,10 @@ const Hero = () => {
             Integrated construction support, heavy equipment rentals, and operational site services for infrastructure contractors across the region.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-4">
-            <a href="/contact.html" className="btn-cta-on-dark inline-flex justify-center">
+            <a href="/contact" className="btn-cta-on-dark inline-flex justify-center">
               Request Equipment Deployment
             </a>
-            <a href="/services.html" className="btn-cta-secondary inline-flex justify-center">
+            <a href="/services" className="btn-cta-secondary inline-flex justify-center">
               Schedule Site Support
             </a>
           </div>

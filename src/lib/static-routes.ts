@@ -30,6 +30,12 @@ export const STATIC_PAGE_IDS = [
 
 export type StaticPageId = (typeof STATIC_PAGE_IDS)[number];
 
+/** Clean URL path for a page (Vercel rewrites serve .html at these paths). */
+export function pathForPageId(pageId: StaticPageId): string {
+  if (pageId === "index") return "/";
+  return `/${pageId}`;
+}
+
 /** First 6 blog posts for list page; static detail filenames. */
 export const BLOG_STATIC_PAGES = [
   { slug: "fleet-deployment-construction", file: "blog-fleet-deployment.html" },

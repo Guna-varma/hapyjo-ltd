@@ -60,7 +60,7 @@ const Blog = () => {
           })}
         </div>
         <div className="mt-10 flex justify-center">
-          <a href="/blog.html" className="btn-cta">
+          <a href="/blog" className="btn-cta">
             Read All Insights
           </a>
         </div>

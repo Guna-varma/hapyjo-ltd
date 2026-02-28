@@ -8,7 +8,7 @@ const services = [
     outcome: "Site logistics, coordination, and operational support to keep projects on track.",
     deployment: "Project-based and ongoing site coverage",
     cta: "Check Deployment Availability",
-    ctaHref: "/contact.html",
+    ctaHref: "/contact",
     imageIndex: IMAGE_ALLOCATION.services[0],
   },
   {
@@ -16,7 +16,7 @@ const services = [
     outcome: "End-to-end fleet deployment, tracking, and maintenance for maximum uptime.",
     deployment: "Full fleet deployment and tracking",
     cta: "Check Deployment Availability",
-    ctaHref: "/contact.html",
+    ctaHref: "/contact",
     imageIndex: IMAGE_ALLOCATION.services[1],
   },
   {
@@ -24,7 +24,7 @@ const services = [
     outcome: "Excavators, loaders, cranes, and earthmoving machinery on flexible terms.",
     deployment: "Day, weekly, or project-based rental",
     cta: "Request Rental Quote",
-    ctaHref: "/rentals.html",
+    ctaHref: "/rentals",
     imageIndex: IMAGE_ALLOCATION.services[2],
   },
   {
@@ -32,7 +32,7 @@ const services = [
     outcome: "Safe, reliable transport for crews and personnel to and from project sites.",
     deployment: "Scheduled and on-demand transport",
     cta: "Check Deployment Availability",
-    ctaHref: "/contact.html",
+    ctaHref: "/contact",
     imageIndex: IMAGE_ALLOCATION.services[3],
   },
   {
@@ -40,7 +40,7 @@ const services = [
     outcome: "Tailored equipment packages for your project scope and timeline.",
     deployment: "Turnkey deployment to site",
     cta: "View Equipment Capability",
-    ctaHref: "/services.html",
+    ctaHref: "/services",
     imageIndex: IMAGE_ALLOCATION.services[4],
   },
   {
@@ -48,7 +48,7 @@ const services = [
     outcome: "Forklifts, handlers, and material-moving equipment for construction needs.",
     deployment: "Warehouse and site delivery",
     cta: "Request Rental Quote",
-    ctaHref: "/rentals.html",
+    ctaHref: "/rentals",
     imageIndex: IMAGE_ALLOCATION.services[5],
   },
 ];

@@ -56,7 +56,7 @@ export default function GalleryStatic({ page }: { page: number }) {
                 return (
                   <a
                     key={file}
-                    href={p === 1 ? "/gallery.html" : `/${file}`}
+                    href={p === 1 ? "/gallery" : `/${file.replace(".html", "")}`}
                     className={`inline-block px-4 py-2 text-sm font-medium ${
                       isCurrent ? "bg-[#0A1F44] text-[#F8F5F0]" : "bg-[#F8F5F0] text-[#2C2C2C] border border-[#0A1F44]/10"
                     }`}
@@ -70,7 +70,7 @@ export default function GalleryStatic({ page }: { page: number }) {
           )}
 
           <p className="mt-8 text-center">
-            <a href="/index.html" className="text-sm text-[#2C2C2C]/70">Back to Home</a>
+            <a href="/" className="text-sm text-[#2C2C2C]/70">Back to Home</a>
           </p>
         </div>
       </section>

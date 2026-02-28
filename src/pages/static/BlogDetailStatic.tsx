@@ -22,7 +22,7 @@ export default function BlogDetailStatic({ pageId }: { pageId: StaticPageId }) {
         <section className="section-classic">
           <div className="mx-auto max-w-[1200px] px-6 text-center">
             <h1 className="font-serif text-2xl font-bold text-[#2C2C2C]">Post not found</h1>
-            <a href="/blog.html" className="mt-6 inline-block bg-[#0A1F44] text-[#F8F5F0] px-6 py-3 text-sm font-semibold uppercase">
+            <a href="/blog" className="mt-6 inline-block bg-[#0A1F44] text-[#F8F5F0] px-6 py-3 text-sm font-semibold uppercase">
               Back to Blog
             </a>
           </div>
@@ -39,7 +39,7 @@ export default function BlogDetailStatic({ pageId }: { pageId: StaticPageId }) {
     <Layout>
       <article className="section-classic">
         <div className="mx-auto max-w-[1200px] px-6">
-          <a href="/blog.html" className="inline-block text-sm text-[#2C2C2C]/70 mb-8">
+          <a href="/blog" className="inline-block text-sm text-[#2C2C2C]/70 mb-8">
             ← Back to Blog
           </a>
 

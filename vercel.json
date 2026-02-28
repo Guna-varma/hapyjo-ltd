@@ -1,0 +1,24 @@
+{
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/services", "destination": "/services.html" },
+    { "source": "/rentals", "destination": "/rentals.html" },
+    { "source": "/industries", "destination": "/industries.html" },
+    { "source": "/blog", "destination": "/blog.html" },
+    { "source": "/blog-fleet-deployment", "destination": "/blog-fleet-deployment.html" },
+    { "source": "/blog-machinery-planning", "destination": "/blog-machinery-planning.html" },
+    { "source": "/blog-dump-truck", "destination": "/blog-dump-truck.html" },
+    { "source": "/blog-heavy-equipment-rental", "destination": "/blog-heavy-equipment-rental.html" },
+    { "source": "/blog-site-logistics", "destination": "/blog-site-logistics.html" },
+    { "source": "/blog-transport-efficiency", "destination": "/blog-transport-efficiency.html" },
+    { "source": "/gallery", "destination": "/gallery.html" },
+    { "source": "/gallery-page-2", "destination": "/gallery-page-2.html" },
+    { "source": "/gallery-page-3", "destination": "/gallery-page-3.html" },
+    { "source": "/gallery-page-4", "destination": "/gallery-page-4.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

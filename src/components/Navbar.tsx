@@ -4,13 +4,13 @@ import { Menu, X } from "lucide-react";
 const logoImg = new URL("../assets/Hapyjoimage.png", import.meta.url).href;
 
 const navLinks = [
-  { label: "About", href: "/about.html" },
-  { label: "Services", href: "/services.html" },
-  { label: "Rentals", href: "/rentals.html" },
-  { label: "Industries", href: "/industries.html" },
-  { label: "Blog", href: "/blog.html" },
-  { label: "Gallery", href: "/gallery.html" },
-  { label: "Contact", href: "/contact.html" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Rentals", href: "/rentals" },
+  { label: "Industries", href: "/industries" },
+  { label: "Blog", href: "/blog" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const Navbar = () => {
@@ -24,7 +24,7 @@ const Navbar = () => {
       >
         <div className="mx-auto flex max-w-[1200px] flex-shrink-0 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <a
-            href="/index.html"
+            href="/"
             className="flex shrink-0 items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 rounded"
             aria-label="HapyJo Ltd home"
           >
@@ -49,7 +49,7 @@ const Navbar = () => {
               </a>
             ))}
             <a
-              href="/contact.html"
+              href="/contact"
               className="btn-cta shrink-0 whitespace-nowrap text-center"
             >
               Request Equipment Deployment
@@ -75,7 +75,7 @@ const Navbar = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-stone-dark p-4 sm:p-6">
-              <a href="/index.html" onClick={() => setOpen(false)} className="flex shrink-0">
+              <a href="/" onClick={() => setOpen(false)} className="flex shrink-0">
                 <img
                   src={logoImg}
                   alt="HapyJo Ltd"
@@ -106,7 +106,7 @@ const Navbar = () => {
               ))}
               <div className="pt-4">
                 <a
-                  href="/contact.html"
+                  href="/contact"
                   onClick={() => setOpen(false)}
                   className="btn-cta flex w-full justify-center"
                 >

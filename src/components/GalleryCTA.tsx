@@ -18,7 +18,7 @@ const GalleryCTA = () => {
           <p className="mt-3 mx-auto max-w-md text-muted-foreground">
             Browse equipment, sites, and operations in our gallery.
           </p>
-          <a href="/gallery.html" className="btn-cta mt-8">
+          <a href="/gallery" className="btn-cta mt-8">
             Check Fleet Availability
           </a>
         </div>

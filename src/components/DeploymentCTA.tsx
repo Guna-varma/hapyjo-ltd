@@ -9,7 +9,7 @@ const DeploymentCTA = () => {
           Request a deployment plan. Our team will align fleet availability and site support to your timeline.
         </p>
         <div className="mt-10">
-          <a href="/contact.html" className="btn-cta-on-dark">
+          <a href="/contact" className="btn-cta-on-dark">
             Request Deployment Plan
           </a>
         </div>
