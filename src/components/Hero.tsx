@@ -1,7 +1,10 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { FLEET_STATS } from "@/lib/constants";
 
-const heroVideo = new URL("../assets/hapyjo/Hapyjohero background video.mp4", import.meta.url).href;
+const CLOUDINARY_VIDEO =
+  "https://res.cloudinary.com/dfxce3jm2/video/upload/v1772351081/Hapyjohero_background_video_rfdhvu.mp4";
+const localVideo = new URL("../assets/hapyjo/Hapyjohero background video.mp4", import.meta.url).href;
+const fallbackImage = new URL("../assets/hapyjo/4.jpeg", import.meta.url).href;
 
 const overlayStats = [
   { value: FLEET_STATS.totalFleet, label: "Fleet Units" },
@@ -10,10 +13,20 @@ const overlayStats = [
   { value: "Full", label: "Site Logistics Support" },
 ];
 
+type VideoSource = "cloudinary" | "local" | "image";
+
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [source, setSource] = useState<VideoSource>("cloudinary");
+
+  const videoSrc = source === "cloudinary" ? CLOUDINARY_VIDEO : source === "local" ? localVideo : null;
+
+  const handleVideoError = () => {
+    setSource((prev) => (prev === "cloudinary" ? "local" : "image"));
+  };
 
   useEffect(() => {
+    if (source === "image") return;
     const video = videoRef.current;
     if (!video) return;
     const play = () => {
@@ -26,23 +39,33 @@ const Hero = () => {
       video.removeEventListener("loadeddata", play);
       video.removeEventListener("canplay", play);
     };
-  }, []);
+  }, [source]);
 
   return (
     <header className="relative min-h-[90vh] overflow-hidden bg-[hsl(var(--navy))]">
-      {/* Background video */}
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        className="absolute inset-0 h-full w-full object-cover"
-        aria-hidden
-      >
-        <source src={heroVideo} type="video/mp4" />
-      </video>
+      {/* Background: video (Cloudinary → local) or fallback image */}
+      {source === "image" ? (
+        <img
+          src={fallbackImage}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          aria-hidden
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          key={videoSrc}
+          src={videoSrc}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          onError={handleVideoError}
+          className="absolute inset-0 h-full w-full object-cover"
+          aria-hidden
+        />
+      )}
       <div className="absolute inset-0 bg-[hsl(var(--navy))]/75" aria-hidden />
 
       <div className="relative z-10 mx-auto flex min-h-[90vh] max-w-[1200px] flex-col px-4 py-12 sm:px-6 sm:py-16 lg:flex-row lg:items-center lg:px-8 lg:py-20">
