@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 const logoImg = new URL("../assets/Hapyjoimage.png", import.meta.url).href;
 
 const navLinks = [
+  { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Rentals", href: "/rentals" },
@@ -60,10 +61,10 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="sticky top-0 z-[1000] border-b border-stone-dark bg-stone/95 backdrop-blur-sm p-0 shadow-soft"
+        className="sticky top-0 z-[1000] border-b border-stone-dark bg-stone/95 backdrop-blur-sm py-4 shadow-soft"
         aria-label="Main navigation"
       >
-        <div className="mx-auto flex max-w-[1200px] flex-shrink-0 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[1200px] flex-shrink-0 items-center justify-between gap-3 px-4 sm:px-6 lg:gap-4 lg:px-8">
           <a
             href="/"
             className="flex shrink-0 items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 rounded-xl"
@@ -72,19 +73,19 @@ const Navbar = () => {
             <img
               src={logoImg}
               alt="HapyJo Ltd"
-              className="h-16 w-auto object-contain sm:h-20 md:h-24 lg:h-28 xl:h-32 drop-shadow-md"
+              className="h-8 w-auto object-contain sm:h-9 md:h-10 lg:h-10 drop-shadow-sm"
               fetchPriority="high"
             />
           </a>
 
-          <div className="hidden items-center gap-6 lg:gap-8 xl:flex">
+          <div className="hidden items-center gap-5 lg:gap-6 xl:flex">
             {navLinks.map((l) => {
               const active = isActive(l.href, pathname);
               return (
                 <a
                   key={l.href}
                   href={l.href}
-                  className={`whitespace-nowrap text-sm font-semibold uppercase tracking-wider transition-colors hover:text-navy ${
+                  className={`whitespace-nowrap text-xs font-semibold uppercase tracking-wider transition-colors hover:text-navy lg:text-sm ${
                     active ? "border-b-2 border-navy font-bold text-navy" : "text-steel"
                   }`}
                   aria-current={active ? "page" : undefined}
@@ -95,7 +96,7 @@ const Navbar = () => {
             })}
             <a
               href="/contact#contact"
-              className="btn-cta shrink-0 whitespace-nowrap text-center"
+              className="shrink-0 whitespace-nowrap rounded-lg border-2 border-navy bg-navy px-4 py-2 text-center text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-navy-light"
             >
               Request Equipment Deployment
             </a>
@@ -132,7 +133,7 @@ const Navbar = () => {
                 <img
                   src={logoImg}
                   alt="HapyJo Ltd"
-                  className="h-20 w-auto object-contain sm:h-24"
+                  className="h-15 w-auto object-contain sm:h-20"
                 />
               </a>
               <button
