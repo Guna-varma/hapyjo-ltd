@@ -19,21 +19,25 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="sticky top-0 z-[1000] border-b border-stone-dark bg-stone py-3 sm:py-4"
+        className="sticky top-0 z-[1000] border-b border-stone-dark bg-stone/95 backdrop-blur-sm py-3 sm:py-4 shadow-soft"
         aria-label="Main navigation"
       >
         <div className="mx-auto flex max-w-[1200px] flex-shrink-0 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <a
             href="/"
-            className="flex shrink-0 items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 rounded"
+            className="flex shrink-0 items-center gap-2 sm:gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 rounded-xl"
             aria-label="HapyJo Ltd home"
           >
             <img
               src={logoImg}
-              alt="HapyJo Ltd"
-              className="h-11 w-auto sm:h-12 md:h-14 lg:h-[3.5rem]"
+              alt=""
+              className="h-10 w-auto object-contain sm:h-12 md:h-14 lg:h-[3.5rem] drop-shadow-md"
+              style={{ minHeight: 40, maxHeight: 60 }}
               fetchPriority="high"
             />
+            <span className="hidden font-heading text-base font-bold tracking-tight text-navy sm:block md:text-lg">
+              HapyJo Ltd
+            </span>
           </a>
 
           <div className="hidden items-center gap-6 lg:gap-8 xl:flex">
@@ -73,12 +77,14 @@ const Navbar = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-stone-dark p-4 sm:p-6">
-              <a href="/" onClick={() => setOpen(false)} className="flex shrink-0">
+              <a href="/" onClick={() => setOpen(false)} className="flex shrink-0 items-center gap-2">
                 <img
                   src={logoImg}
-                  alt="HapyJo Ltd"
-                  className="h-10 w-auto sm:h-11"
+                  alt=""
+                  className="h-10 w-auto object-contain sm:h-12"
+                  style={{ minHeight: 40 }}
                 />
+                <span className="font-heading text-base font-bold text-navy">HapyJo Ltd</span>
               </a>
               <button
                 type="button"

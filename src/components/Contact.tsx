@@ -3,6 +3,7 @@ import { useFadeInOnScroll } from "@/hooks/use-fade-in";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { COMPANY } from "@/lib/constants";
 import { submitContactForm, type ContactFormData } from "@/lib/contact-form";
+import { LocationMap } from "@/components/LocationMap";
 
 const Contact = () => {
   const { ref, isVisible } = useFadeInOnScroll();
@@ -35,13 +36,15 @@ const Contact = () => {
   };
 
   return (
-    <section
-      id="contact"
-      ref={ref as React.RefObject<HTMLElement>}
-      className={`bg-background py-16 sm:py-20 lg:py-24 ${isVisible ? "opacity-100" : ""}`}
-    >
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
+    <>
+      <LocationMap />
+      <section
+        id="contact"
+        ref={ref as React.RefObject<HTMLElement>}
+        className={`bg-background py-16 sm:py-20 lg:py-24 ${isVisible ? "opacity-100" : ""}`}
+      >
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-equipment-yellow">
             Deployment &amp; Support
           </p>
@@ -86,7 +89,7 @@ const Contact = () => {
           <form
             ref={formRef}
             onSubmit={handleSubmit}
-            className="rounded-xl border border-border bg-card p-8"
+            className="rounded-2xl border border-border bg-card/80 p-8 shadow-soft-lg backdrop-blur-sm transition-all duration-300 sm:p-10"
           >
             {status === "success" && (
               <div className="mb-6 rounded-xl bg-green-50 dark:bg-green-950/30 px-4 py-3 text-sm font-medium text-green-800 dark:text-green-200">
@@ -190,8 +193,9 @@ const Contact = () => {
             </button>
           </form>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 };
 

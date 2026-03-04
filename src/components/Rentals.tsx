@@ -40,16 +40,16 @@ const Rentals = () => {
               <a
                 key={e.title}
                 href="/rentals"
-                className="block rounded-xl border border-border bg-card p-4 text-left transition-[background-color,border-color] hover:bg-white hover:border-stone-dark sm:p-6"
+                className="block rounded-2xl border border-border bg-card/80 p-6 text-left shadow-soft transition-all duration-300 hover:shadow-soft-lg hover:border-stone-dark hover:bg-card sm:p-8"
               >
-                <span className="block h-0.5 w-12 bg-navy" aria-hidden />
-                <h3 className="mt-4 font-heading text-lg font-bold text-foreground">
+                <span className="block h-1 w-14 rounded-full bg-navy" aria-hidden />
+                <h3 className="mt-5 font-heading text-xl font-bold text-foreground">
                   {e.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {e.description}
                 </p>
-                <span className="mt-4 inline-block text-sm font-semibold uppercase tracking-wider text-navy">
+                <span className="mt-5 inline-block text-sm font-semibold uppercase tracking-wider text-navy transition-colors hover:underline">
                   Get Rental Quote →
                 </span>
               </a>

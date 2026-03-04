@@ -1,12 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   INDUSTRIAL UX — Visual Trust System
-   Deep navy, warm stone/sand, steel gray, equipment yellow. No gradients.
+   Premium Industrial UX — Visual Trust System
+   Deep navy, warm stone/sand, steel gray, equipment yellow. Subtle gradients.
 --------------------------------------------------------------------------- */
 @layer base {
   :root {
@@ -19,6 +19,8 @@
     --accent: 45 55% 48%;
     --border: 220 12% 88%;
     --radius: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 24px;
     /* Industrial palette */
     --navy: 220 45% 12%;
     --navy-light: 220 35% 18%;
@@ -36,18 +38,18 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Inter', 'Poppins', ui-sans-serif, system-ui, sans-serif;
     line-height: 1.6;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Source Sans 3', 'Inter', sans-serif;
+    font-family: 'Montserrat', 'Source Sans 3', 'Inter', sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
 }
 
-/* Section & container — UX spacing system */
+/* Section & container — Premium UX spacing */
 .section-industrial,
 .section-classic {
   padding-top: 100px;
@@ -63,15 +65,17 @@
   padding-right: 1.5rem;
 }
 
-/* Cards: 32px spacing, 12px radius, minimal hover */
+/* Premium cards: glassmorphism-style, rounded-2xl, soft shadow, smooth transition */
 .card-industrial {
-  border-radius: 12px;
-  padding: 32px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  border-radius: var(--radius-2xl);
+  padding: 2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
 .card-industrial:hover {
   background-color: hsl(var(--stone));
   border-color: hsl(var(--stone-dark));
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
 }
 
 /* ---------------------------------------------------------------------------
@@ -90,11 +94,12 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   border: 2px solid hsl(var(--navy));
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08);
 }
 a.btn-cta {
   cursor: pointer;
@@ -287,4 +292,11 @@ html {
 }
 section {
   scroll-margin-top: 100px;
+}
+
+/* Premium table container (use with .rounded-2xl .overflow-hidden .shadow-lg) */
+.table-container-premium {
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
 }

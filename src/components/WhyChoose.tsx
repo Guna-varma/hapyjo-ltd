@@ -31,9 +31,10 @@ const WhyChoose = () => {
           {badges.map((b) => (
             <div
               key={b.title}
-              className="rounded-xl border-l-4 border-equipment-yellow bg-white/5 py-4 pl-4 pr-4 transition-[background-color] hover:bg-white/10 sm:py-6 sm:pl-6 sm:pr-6"
+              className="rounded-2xl border border-white/10 bg-white/5 py-5 pl-5 pr-5 shadow-soft transition-all duration-300 hover:bg-white/10 hover:shadow-soft-lg sm:py-6 sm:pl-6 sm:pr-6"
             >
-              <h3 className="font-heading text-base font-bold text-white sm:text-lg">
+              <span className="block h-1 w-12 rounded-full bg-equipment-yellow" aria-hidden />
+              <h3 className="mt-4 font-heading text-base font-bold text-white sm:text-lg">
                 {b.title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-white/80">

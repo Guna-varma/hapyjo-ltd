@@ -79,10 +79,10 @@ const Services = () => {
             return (
               <article
                 key={s.title}
-                className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors hover:border-slate-400"
+                className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/80 shadow-soft transition-all duration-300 hover:shadow-soft-lg hover:border-stone-dark"
               >
                 {img && (
-                  <div className="responsive-image-container rounded-t-xl border-b border-slate-200">
+                  <div className="responsive-image-container rounded-t-2xl border-b border-border overflow-hidden">
                     <img
                       src={img}
                       alt=""
@@ -91,24 +91,24 @@ const Services = () => {
                     />
                   </div>
                 )}
-                <div className="flex h-full flex-col justify-between p-5">
+                <div className="flex h-full flex-col justify-between p-6 sm:p-8">
                   <div>
-                    <h3 className="text-left text-base font-semibold text-slate-900 md:text-lg">
+                    <h3 className="font-heading text-left text-lg font-bold text-foreground md:text-xl">
                       {s.title}
                     </h3>
-                    <p className="mt-1 text-xs uppercase tracking-wide text-slate-500">
+                    <p className="mt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       {s.deployment}
                     </p>
-                    <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                    <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
                       {s.outcome}
                     </p>
-                    <div className="mt-5 border-t border-slate-200 pt-3">
-                      <span className="text-xs text-slate-500">
+                    <div className="mt-6 border-t border-border pt-4">
+                      <span className="text-xs font-medium text-muted-foreground">
                         Available
                       </span>
                       <a
                         href={s.ctaHref}
-                        className="mt-4 block text-sm font-medium text-slate-900 underline-offset-4 hover:underline"
+                        className="mt-3 block text-sm font-semibold text-navy underline-offset-4 transition-colors hover:underline"
                       >
                         {s.cta}
                       </a>

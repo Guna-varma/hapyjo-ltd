@@ -46,7 +46,7 @@ const Trust = () => {
                   return (
                     <div
                       key={idx}
-                      className="responsive-image-container border border-stone-dark bg-white"
+                      className="responsive-image-container overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-all duration-300 hover:shadow-soft-lg"
                     >
                       <img
                         src={img}

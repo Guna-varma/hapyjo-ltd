@@ -24,10 +24,10 @@ const About = () => {
           <div className="divider-industrial mx-auto mt-4" />
         </div>
 
-        <div className="mt-10 grid items-center gap-8 sm:mt-12 lg:grid-cols-2 lg:gap-16">
+        <div className="mt-12 grid items-center gap-10 sm:mt-14 lg:grid-cols-2 lg:gap-16">
           <div className="space-y-6">
             {main && (
-              <div className="responsive-image-container border border-stone-dark">
+              <div className="responsive-image-container overflow-hidden rounded-2xl border border-border shadow-soft">
                 <img
                   src={main}
                   alt="Professional construction site operations and machinery"
@@ -37,7 +37,7 @@ const About = () => {
               </div>
             )}
             {sub1 && (
-              <div className="responsive-image-container border border-stone-dark">
+              <div className="responsive-image-container overflow-hidden rounded-2xl border border-border shadow-soft">
                 <img
                   src={sub1}
                   alt="Site and fleet operations"
@@ -48,7 +48,7 @@ const About = () => {
             )}
           </div>
 
-          <div>
+          <div className="space-y-6">
             <p className="text-base leading-relaxed text-muted-foreground">
               HapyJo Ltd is a professionally managed site support and fleet operations company
               delivering reliable construction logistics, machinery rentals, and on-site
@@ -62,6 +62,9 @@ const About = () => {
             <p className="mt-6 text-base leading-relaxed text-muted-foreground">
               We specialize in site-ready equipment deployment, workforce logistics, and
               dependable fleet availability for uninterrupted project execution.
+            </p>
+            <p className="text-sm text-muted-foreground/90">
+              Our operational base is at SIBLINGS BUUM HOTEL in Bugesera—visit our location page for directions and to plan your site visit.
             </p>
           </div>
         </div>

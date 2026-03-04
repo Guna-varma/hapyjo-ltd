@@ -130,14 +130,14 @@ const Hero = () => {
 
         {/* Right: Overlay stats card */}
         <div className="mt-8 flex flex-1 items-center justify-center lg:mt-0 lg:pl-8">
-          <div className="w-full max-w-xl rounded-xl border border-stone-dark bg-white p-4 shadow-xl sm:p-6 lg:p-8">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6">
+          <div className="w-full max-w-xl rounded-2xl border border-white/20 bg-white/95 p-6 shadow-soft-xl backdrop-blur-sm sm:p-8 lg:p-10">
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-4 sm:gap-6">
               {overlayStats.map((s) => (
                 <div key={s.label} className="text-center">
-                  <p className="font-heading text-xl font-bold text-navy sm:text-2xl">
+                  <p className="font-heading text-2xl font-bold text-navy sm:text-3xl">
                     {s.value}
                   </p>
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-steel">
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-steel">
                     {s.label}
                   </p>
                 </div>
