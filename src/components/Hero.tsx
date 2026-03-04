@@ -119,7 +119,7 @@ const Hero = () => {
             Integrated construction support, heavy equipment rentals, and operational site services for infrastructure contractors across the region.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-4">
-            <a href="/contact" className="btn-cta-on-dark inline-flex justify-center">
+            <a href="/contact#contact" className="btn-cta-on-dark inline-flex justify-center">
               Request Equipment Deployment
             </a>
             <a href="/services" className="btn-cta-secondary inline-flex justify-center">
@@ -128,16 +128,16 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Right: Overlay stats card */}
-        <div className="mt-8 flex flex-1 items-center justify-center lg:mt-0 lg:pl-8">
-          <div className="w-full max-w-xl rounded-2xl border border-white/20 bg-white/95 p-6 shadow-soft-xl backdrop-blur-sm sm:p-8 lg:p-10">
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-4 sm:gap-6">
+        {/* Right: Overlay stats card – 2x2 grid only to prevent overlap on desktop */}
+        <div className="mt-6 flex min-w-0 flex-1 items-center justify-center sm:mt-8 lg:mt-0 lg:pl-8">
+          <div className="w-full min-w-0 max-w-xl rounded-2xl border border-white/20 bg-white/95 p-4 shadow-soft-xl backdrop-blur-sm sm:p-6 md:p-8 lg:max-w-md lg:p-10">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:gap-x-8 sm:gap-y-5 md:gap-x-10 md:gap-y-6">
               {overlayStats.map((s) => (
-                <div key={s.label} className="text-center">
-                  <p className="font-heading text-2xl font-bold text-navy sm:text-3xl">
+                <div key={s.label} className="min-w-[6rem] text-center sm:min-w-[7rem]">
+                  <p className="font-heading text-lg font-bold text-navy sm:text-2xl md:text-3xl">
                     {s.value}
                   </p>
-                  <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-steel">
+                  <p className="mt-1 text-[10px] font-semibold uppercase leading-tight tracking-wider text-steel sm:mt-2 sm:text-xs">
                     {s.label}
                   </p>
                 </div>

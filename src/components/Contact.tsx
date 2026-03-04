@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useFadeInOnScroll } from "@/hooks/use-fade-in";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { COMPANY } from "@/lib/constants";
@@ -10,6 +10,17 @@ const Contact = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
+
+  // When landing with #contact (e.g. "Request Equipment Deployment"), scroll to form section after mount
+  useEffect(() => {
+    if (typeof window === "undefined" || window.location.hash !== "#contact") return;
+    const el = document.getElementById("contact");
+    if (!el) return;
+    const t = setTimeout(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

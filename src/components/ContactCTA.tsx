@@ -35,7 +35,7 @@ export function ContactCTA() {
         </div>
       </div>
       <div className="mt-8">
-        <a href="/contact" className="btn-cta w-full justify-center sm:w-auto">
+        <a href="/contact#contact" className="btn-cta w-full justify-center sm:w-auto">
           Contact Us
         </a>
       </div>

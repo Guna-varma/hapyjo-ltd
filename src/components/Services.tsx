@@ -8,7 +8,7 @@ const services = [
     outcome: "Site logistics, coordination, and operational support to keep projects on track.",
     deployment: "Project-based and ongoing site coverage",
     cta: "Check Deployment Availability",
-    ctaHref: "/contact",
+    ctaHref: "/contact#contact",
     imageIndex: IMAGE_ALLOCATION.services[0],
   },
   {
@@ -16,7 +16,7 @@ const services = [
     outcome: "End-to-end fleet deployment, tracking, and maintenance for maximum uptime.",
     deployment: "Full fleet deployment and tracking",
     cta: "Check Deployment Availability",
-    ctaHref: "/contact",
+    ctaHref: "/contact#contact",
     imageIndex: IMAGE_ALLOCATION.services[1],
   },
   {
@@ -32,7 +32,7 @@ const services = [
     outcome: "Safe, reliable transport for crews and personnel to and from project sites.",
     deployment: "Scheduled and on-demand transport",
     cta: "Check Deployment Availability",
-    ctaHref: "/contact",
+    ctaHref: "/contact#contact",
     imageIndex: IMAGE_ALLOCATION.services[3],
   },
   {

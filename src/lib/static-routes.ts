@@ -2,6 +2,8 @@
  * Static page IDs derived from pathname.
  * No dynamic routing – each .html file maps to one page.
  */
+import { INDUSTRY_PAGE_IDS } from "@/lib/industries-data";
+
 export function getPageIdFromPathname(pathname: string): string {
   const base = pathname.replace(/^\//, "").replace(/\.html$/, "").toLowerCase();
   if (!base || base === "index") return "index";
@@ -14,6 +16,7 @@ export const STATIC_PAGE_IDS = [
   "services",
   "rentals",
   "industries",
+  ...INDUSTRY_PAGE_IDS,
   "blog",
   "blog-fleet-deployment",
   "blog-machinery-planning",

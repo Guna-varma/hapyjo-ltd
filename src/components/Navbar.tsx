@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 
 const logoImg = new URL("../assets/Hapyjoimage.png", import.meta.url).href;
@@ -22,14 +22,45 @@ function isActive(href: string, pathname: string): boolean {
   return path === base || (path === "" && base === "index");
 }
 
+const NAV_DRAWER_DURATION_MS = 300;
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [isEntering, setIsEntering] = useState(true); // start off-screen so enter animation runs
   const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+
+  const startClose = () => {
+    setIsClosing(true);
+  };
+
+  // Run slide-in: after mount with open=true, trigger transition to translate-x-0
+  useEffect(() => {
+    if (!open || isClosing) return;
+    const frame = requestAnimationFrame(() => {
+      setIsEntering(false);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [open, isClosing]);
+
+  // Reset entering when drawer is closed so next open animates in
+  useEffect(() => {
+    if (!open && !isClosing) setIsEntering(true);
+  }, [open, isClosing]);
+
+  useEffect(() => {
+    if (!isClosing) return;
+    const t = setTimeout(() => {
+      setOpen(false);
+      setIsClosing(false);
+    }, NAV_DRAWER_DURATION_MS);
+    return () => clearTimeout(t);
+  }, [isClosing]);
 
   return (
     <>
       <nav
-        className="sticky top-0 z-[1000] border-b border-stone-dark bg-stone/95 backdrop-blur-sm py-3 sm:py-4 shadow-soft"
+        className="sticky top-0 z-[1000] border-b border-stone-dark bg-stone/95 backdrop-blur-sm p-0 shadow-soft"
         aria-label="Main navigation"
       >
         <div className="mx-auto flex max-w-[1200px] flex-shrink-0 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -41,8 +72,7 @@ const Navbar = () => {
             <img
               src={logoImg}
               alt="HapyJo Ltd"
-              className="h-10 w-auto object-contain sm:h-12 md:h-14 lg:h-[3.5rem] drop-shadow-md"
-              style={{ minHeight: 40, maxHeight: 60 }}
+              className="h-16 w-auto object-contain sm:h-20 md:h-24 lg:h-28 xl:h-32 drop-shadow-md"
               fetchPriority="high"
             />
           </a>
@@ -64,7 +94,7 @@ const Navbar = () => {
               );
             })}
             <a
-              href="/contact"
+              href="/contact#contact"
               className="btn-cta shrink-0 whitespace-nowrap text-center"
             >
               Request Equipment Deployment
@@ -82,25 +112,32 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {open && (
-        <div className="fixed inset-0 z-[1001]" onClick={() => setOpen(false)}>
+      {(open || isClosing) && (
+        <div
+          className={`fixed inset-0 z-[1001] transition-opacity duration-300 ease-out ${
+            open && !isClosing && !isEntering ? "opacity-100" : "opacity-0"
+          } ${isClosing ? "pointer-events-none" : ""}`}
+          onClick={startClose}
+          aria-hidden="true"
+        >
           <div className="absolute inset-0 bg-navy/20" />
           <div
-            className="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-stone-dark bg-stone shadow-xl"
+            className={`absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-stone-dark bg-stone shadow-xl transition-transform duration-300 ease-out ${
+              open && !isClosing && !isEntering ? "translate-x-0" : "translate-x-full"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-stone-dark p-4 sm:p-6">
-              <a href="/" onClick={() => setOpen(false)} className="flex shrink-0">
+              <a href="/" onClick={startClose} className="flex shrink-0">
                 <img
                   src={logoImg}
                   alt="HapyJo Ltd"
-                  className="h-10 w-auto object-contain sm:h-12"
-                  style={{ minHeight: 40 }}
+                  className="h-20 w-auto object-contain sm:h-24"
                 />
               </a>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={startClose}
                 aria-label="Close menu"
                 className="p-2 text-steel hover:text-navy"
               >
@@ -114,7 +151,7 @@ const Navbar = () => {
                   <a
                     key={l.href}
                     href={l.href}
-                    onClick={() => setOpen(false)}
+                    onClick={startClose}
                     className={`block border-b border-stone-dark py-4 text-base font-semibold uppercase tracking-wider ${
                       active ? "border-l-4 border-navy pl-4 font-bold text-navy" : "text-navy"
                     }`}
@@ -126,8 +163,8 @@ const Navbar = () => {
               })}
               <div className="pt-4">
                 <a
-                  href="/contact"
-                  onClick={() => setOpen(false)}
+                  href="/contact#contact"
+                  onClick={startClose}
                   className="btn-cta flex w-full justify-center"
                 >
                   Request Equipment Deployment
