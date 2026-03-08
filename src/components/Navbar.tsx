@@ -123,29 +123,29 @@ const Navbar = () => {
         >
           <div className="absolute inset-0 bg-navy/20" />
           <div
-            className={`absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-stone-dark bg-stone shadow-xl transition-transform duration-300 ease-out ${
+            className={`absolute right-0 top-0 flex h-full w-full max-w-[min(100%,20rem)] flex-col border-l border-stone-dark bg-stone shadow-soft-xl transition-transform duration-300 ease-out sm:max-w-xs ${
               open && !isClosing && !isEntering ? "translate-x-0" : "translate-x-full"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-stone-dark p-4 sm:p-6">
-              <a href="/" onClick={startClose} className="flex shrink-0">
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-stone-dark px-4 py-3 sm:px-5 sm:py-4">
+              <a href="/" onClick={startClose} className="flex shrink-0 min-w-0">
                 <img
                   src={logoImg}
                   alt="HapyJo Ltd"
-                  className="h-15 w-auto object-contain sm:h-20"
+                  className="h-8 w-auto max-h-10 object-contain object-left sm:h-9"
                 />
               </a>
               <button
                 type="button"
                 onClick={startClose}
                 aria-label="Close menu"
-                className="p-2 text-steel hover:text-navy"
+                className="shrink-0 rounded-lg p-2 text-steel transition-colors hover:bg-stone-dark hover:text-navy"
               >
-                <X size={24} strokeWidth={2} />
+                <X size={22} strokeWidth={2} />
               </button>
             </div>
-            <div className="flex flex-1 flex-col gap-0 overflow-y-auto p-4 sm:p-6">
+            <nav className="flex flex-1 flex-col gap-0 overflow-y-auto px-4 py-3 sm:px-5 sm:py-4" aria-label="Mobile navigation">
               {navLinks.map((l) => {
                 const active = isActive(l.href, pathname);
                 return (
@@ -153,8 +153,8 @@ const Navbar = () => {
                     key={l.href}
                     href={l.href}
                     onClick={startClose}
-                    className={`block border-b border-stone-dark py-4 text-base font-semibold uppercase tracking-wider ${
-                      active ? "border-l-4 border-navy pl-4 font-bold text-navy" : "text-navy"
+                    className={`block border-b border-stone-dark/80 py-3 text-sm font-semibold uppercase tracking-wider transition-colors sm:py-3.5 sm:text-base ${
+                      active ? "border-l-4 border-navy bg-navy/5 pl-4 font-bold text-navy" : "text-navy hover:bg-stone-dark/50 pl-4"
                     }`}
                     aria-current={active ? "page" : undefined}
                   >
@@ -162,16 +162,16 @@ const Navbar = () => {
                   </a>
                 );
               })}
-              <div className="pt-4">
+              <div className="mt-4 px-0 pb-4">
                 <a
                   href="/contact#contact"
                   onClick={startClose}
-                  className="btn-cta flex w-full justify-center"
+                  className="flex w-full items-center justify-center rounded-xl border-2 border-navy bg-navy py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-navy-light"
                 >
                   Request Equipment Deployment
                 </a>
               </div>
-            </div>
+            </nav>
           </div>
         </div>
       )}
