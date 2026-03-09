@@ -1,12 +1,5 @@
-/**
- * Contact form endpoint – e.g. Formspree: https://formspree.io/f/YOUR_FORM_ID
- * Set VITE_CONTACT_FORM_ACTION in .env and in Formspree set the notification
- * email to your company email (see src/lib/constants.ts COMPANY.email).
- */
-export const CONTACT_FORM_ACTION =
-  typeof import.meta !== "undefined" && import.meta.env?.VITE_CONTACT_FORM_ACTION
-    ? import.meta.env.VITE_CONTACT_FORM_ACTION
-    : "";
+/** API route that sends contact emails via server-side SMTP (see api/send-contact.ts). */
+const CONTACT_FORM_API_PATH = "/api/send-contact";
 
 export type ContactFormData = {
   fullName: string;
@@ -17,28 +10,13 @@ export type ContactFormData = {
   message: string;
 };
 
-/** Submit contact form to configured endpoint (Formspree or similar). */
+/** Submit contact form to the backend API, which then sends via SMTP. */
 export async function submitContactForm(data: ContactFormData): Promise<{ ok: boolean; error?: string }> {
-  const action = CONTACT_FORM_ACTION;
-  if (!action) {
-    return { ok: false, error: "Form endpoint not configured. Set VITE_CONTACT_FORM_ACTION in .env" };
-  }
-
   try {
-    const body = {
-      fullName: data.fullName,
-      company: data.company,
-      phone: data.phone,
-      email: data.email,
-      service: data.service,
-      message: data.message,
-      _replyto: data.email,
-    };
-
-    const res = await fetch(action, {
+    const res = await fetch(CONTACT_FORM_API_PATH, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify(data),
     });
 
     if (!res.ok) {
