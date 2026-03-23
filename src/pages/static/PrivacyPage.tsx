@@ -101,6 +101,10 @@ export default function PrivacyPage() {
               <li>Notifications - to send alerts and updates</li>
             </ul>
             <p className="mt-3">Permissions are only used for core functionality.</p>
+            <p className="mt-3">
+              Some permissions are required for core functionality, while others are optional and may limit certain
+              features if not granted.
+            </p>
           </PolicySection>
 
           <PolicySection title="8. Lawful basis and business purpose">
@@ -125,6 +129,7 @@ export default function PrivacyPage() {
               <li>Role-based access and database security rules restrict data visibility by authorized role.</li>
               <li>Administrative actions are controlled through server-side checks and audit-friendly workflows.</li>
             </ul>
+            <p className="mt-3">All data is transmitted securely using industry-standard encryption (HTTPS/TLS).</p>
           </PolicySection>
 
           <PolicySection title="11. Data retention">
