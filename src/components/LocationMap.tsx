@@ -35,7 +35,7 @@ export function LocationMap() {
           </h2>
           <div className="divider-industrial mx-auto mt-4" />
           <p className="mt-4 max-w-2xl mx-auto text-sm sm:text-base text-muted-foreground leading-relaxed">
-            Visit our operational base at SIBLINGS BUUM HOTEL. We coordinate site support, fleet deployment, and equipment rentals from this location in Bugesera.
+            Visit our operational base in Ruhuha, Rwanda. We coordinate site support, fleet deployment, and equipment rentals from this location.
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export function LocationMap() {
             <div className="h-[400px] w-full sm:h-[450px]">
               {shouldLoadMap ? (
                 <iframe
-                  title="Our location – SIBLINGS BUUM HOTEL on Google Maps"
+                  title="Our location – Hapyjo Ltd on Google Maps"
                   src={MAP_LOCATION.embedUrl}
                   width="100%"
                   height="100%"

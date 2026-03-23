@@ -4,6 +4,7 @@ const logoImg = new URL("../assets/Hapyjoimage.png", import.meta.url).href;
 
 const footerNavLinks = [
   { label: "About", href: "/about" },
+  { label: "Privacy Policy", href: "/privacy" },
   { label: "Services", href: "/services" },
   { label: "Rentals", href: "/rentals" },
   { label: "Industries", href: "/industries" },

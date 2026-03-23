@@ -13,6 +13,7 @@ export function getPageIdFromPathname(pathname: string): string {
 export const STATIC_PAGE_IDS = [
   "index",
   "about",
+  "privacy",
   "services",
   "rentals",
   "industries",

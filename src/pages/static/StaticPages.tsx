@@ -9,6 +9,7 @@ import BlogListPage from "./BlogListPage";
 import BlogDetailStatic from "./BlogDetailStatic";
 import GalleryStatic from "./GalleryStatic";
 import ContactPage from "./ContactPage";
+import PrivacyPage from "./PrivacyPage";
 import NotFound from "../NotFound";
 import type { StaticPageId } from "@/lib/static-routes";
 import { INDUSTRY_PAGE_IDS } from "@/lib/industries-data";
@@ -21,6 +22,7 @@ INDUSTRY_PAGE_IDS.forEach((id) => {
 const PAGE_MAP: Record<StaticPageId, React.ReactNode> = {
   index: <HomePage />,
   about: <AboutPage />,
+  privacy: <PrivacyPage />,
   services: <ServicesPage />,
   rentals: <RentalsPage />,
   industries: <IndustriesPage />,

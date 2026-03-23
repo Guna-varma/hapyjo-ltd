@@ -40,6 +40,7 @@ export default defineConfig(({ mode }) => ({
       input: [
         "index.html",
         "about.html",
+        "privacy.html",
         "services.html",
         "rentals.html",
         "industries.html",
