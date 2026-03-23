@@ -47,6 +47,10 @@ export default function PrivacyPage() {
               <li>To generate performance and financial reports for authorized company users.</li>
               <li>To secure, maintain, and improve app quality and reliability.</li>
             </ul>
+            <p className="mt-3">
+              We only collect and use data that is necessary for the app&apos;s core functionality and do not collect
+              data for unrelated purposes.
+            </p>
           </PolicySection>
 
           <PolicySection title="3. Location data usage">
@@ -103,7 +107,7 @@ export default function PrivacyPage() {
           </PolicySection>
 
           <PolicySection title="9. Data sharing">
-            <p>We do not sell personal data. We may share data only with:</p>
+            <p>We do not sell, rent, or trade personal data to third parties. We may share data only with:</p>
             <ul className="mt-2 list-disc space-y-2 pl-5">
               <li>Authorized users within your organization according to role permissions.</li>
               <li>Trusted service providers required to run the platform (for example, hosting and notifications).</li>
@@ -172,6 +176,8 @@ export default function PrivacyPage() {
               <br />
               {COMPANY.name}
               <br />
+              Privacy Team
+              <br />
               Email:{" "}
               <a className="font-medium text-blue-700 underline underline-offset-2" href={`mailto:${COMPANY.email}`}>
                 {COMPANY.email}
@@ -183,6 +189,11 @@ export default function PrivacyPage() {
                 href={`tel:${COMPANY.phone.replace(/\s/g, "")}`}
               >
                 {COMPANY.phone}
+              </a>
+              <br />
+              Website:{" "}
+              <a className="font-medium text-blue-700 underline underline-offset-2" href="https://www.hapyjoltd.com">
+                https://www.hapyjoltd.com
               </a>
             </p>
           </PolicySection>
