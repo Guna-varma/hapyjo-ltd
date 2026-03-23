@@ -86,6 +86,10 @@ export default function PrivacyPage() {
             <p className="mt-3">
               These providers process data only as necessary to provide their services.
             </p>
+            <p className="mt-3">
+              Data is shared with service providers strictly for enabling app functionality (for example, push
+              notification delivery via Expo), and is not sold, rented, or used for advertising.
+            </p>
           </PolicySection>
 
           <PolicySection title="7. App permissions">
