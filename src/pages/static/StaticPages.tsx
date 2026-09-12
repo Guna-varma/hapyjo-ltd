@@ -12,12 +12,12 @@ import ContactPage from "./ContactPage";
 import PrivacyPage from "./PrivacyPage";
 import NotFound from "../NotFound";
 import type { StaticPageId } from "@/lib/static-routes";
-import { INDUSTRY_PAGE_IDS } from "@/lib/industries-data";
+import { INDUSTRY_PAGE_IDS, type IndustryId } from "@/lib/industries-data";
 
-const industryPages: Partial<Record<StaticPageId, React.ReactNode>> = {};
-INDUSTRY_PAGE_IDS.forEach((id) => {
-  industryPages[id as StaticPageId] = <IndustryDetailPage pageId={id as StaticPageId} />;
-});
+/** Every INDUSTRY_PAGE_IDS entry is populated below, so the record is complete by construction. */
+const industryPages = Object.fromEntries(
+  INDUSTRY_PAGE_IDS.map((id) => [id, <IndustryDetailPage pageId={id as StaticPageId} />]),
+) as Record<IndustryId, React.ReactNode>;
 
 const PAGE_MAP: Record<StaticPageId, React.ReactNode> = {
   index: <HomePage />,

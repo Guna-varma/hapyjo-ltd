@@ -84,10 +84,10 @@ const GalleryPage = () => {
 };
 
 function GalleryGrid({ indices }: { indices: number[] }) {
-  const { ref, isVisible } = useFadeInOnScroll();
+  const { ref, isVisible } = useFadeInOnScroll<HTMLDivElement>();
   return (
     <div
-      ref={ref as React.RefObject<HTMLElement>}
+      ref={ref}
       className={`mt-16 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 stagger-children ${isVisible ? "is-visible" : ""}`}
     >
       {indices.map((index, i) => {

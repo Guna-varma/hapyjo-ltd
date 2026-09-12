@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { LogIn, Menu, X } from "lucide-react";
+import { FIELD_OPS_APP_URL } from "@/lib/constants";
 
 const logoImg = new URL("../assets/Hapyjoimage.png", import.meta.url).href;
 
@@ -100,6 +101,18 @@ const Navbar = () => {
             >
               Request Equipment Deployment
             </a>
+            {/*
+              Staff entry point to the Field Operations app. A plain link (not a
+              router link) because /app is a separate Vite entry with its own
+              bundle, so it must be a full navigation.
+            */}
+            <a
+              href={FIELD_OPS_APP_URL}
+              className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border-2 border-navy px-4 py-2 text-center text-xs font-semibold uppercase tracking-wider text-navy transition-colors hover:bg-navy hover:text-white"
+            >
+              <LogIn size={15} strokeWidth={2.5} aria-hidden="true" />
+              Login
+            </a>
           </div>
 
           <button
@@ -162,13 +175,21 @@ const Navbar = () => {
                   </a>
                 );
               })}
-              <div className="mt-4 px-0 pb-4">
+              <div className="mt-4 flex flex-col gap-3 px-0 pb-4">
                 <a
                   href="/contact#contact"
                   onClick={startClose}
                   className="flex w-full items-center justify-center rounded-xl border-2 border-navy bg-navy py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-navy-light"
                 >
                   Request Equipment Deployment
+                </a>
+                <a
+                  href={FIELD_OPS_APP_URL}
+                  onClick={startClose}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-navy py-2.5 text-xs font-semibold uppercase tracking-wider text-navy transition-colors hover:bg-navy hover:text-white"
+                >
+                  <LogIn size={15} strokeWidth={2.5} aria-hidden="true" />
+                  Login
                 </a>
               </div>
             </nav>

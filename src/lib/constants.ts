@@ -34,3 +34,11 @@ export const FLEET_STATS = {
   totalFleet: 34,
   imagesUsed: 94,
 } as const;
+
+/**
+ * Entry point to the Field Operations app for staff.
+ *
+ * /app is a separate Vite entry (app.html) with its own bundle, so links to it
+ * must be plain anchors that trigger a full navigation, not client-side routes.
+ */
+export const FIELD_OPS_APP_URL = "/app";

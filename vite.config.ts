@@ -32,6 +32,28 @@ function copyFaviconsPlugin() {
   };
 }
 
+/**
+ * Serves app.html for /app and /app/* during `vite dev`, mirroring the Vercel
+ * rewrites in vercel.json. Without it, deep links like /app/sites would fall
+ * through to the marketing index.html in development only.
+ */
+function fieldOpsDevRewritePlugin() {
+  return {
+    name: "field-ops-dev-rewrite",
+    apply: "serve" as const,
+    configureServer(server: { middlewares: { use: (fn: (req: { url?: string }, res: unknown, next: () => void) => void) => void } }) {
+      server.middlewares.use((req, res, next) => {
+        const url = req.url ?? "";
+        const pathname = url.split("?")[0];
+        if (pathname === "/app" || pathname.startsWith("/app/")) {
+          req.url = "/app.html";
+        }
+        next();
+      });
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   base: process.env.BASE_PATH || "/",
@@ -39,6 +61,9 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       input: [
         "index.html",
+        // Field Operations app (/app) — its own entry, so the marketing pages never
+        // load the app bundle and vice versa.
+        "app.html",
         "about.html",
         "privacy.html",
         "services.html",
@@ -68,6 +93,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    fieldOpsDevRewritePlugin(),
     mode === "development" && componentTagger(),
     copyFaviconsPlugin(),
   ].filter(Boolean),

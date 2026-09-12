@@ -1,0 +1,176 @@
+import React, { useMemo, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from '@/field-ops/components/primitives';
+import { Card } from '@/field-ops/components/ui/Card';
+import { SiteCard } from '@/field-ops/components/sites/SiteCard';
+import { Header } from '@/field-ops/components/ui/Header';
+import { DashboardLayout } from '@/field-ops/components/ui/DashboardLayout';
+import { useLocale } from '@/field-ops/context/LocaleContext';
+import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
+import { formatAmount } from '@/field-ops/lib/currency';
+import { colors, layout } from '@/field-ops/theme/tokens';
+import { Building2, Banknote, MapPin, TrendingUp, FileText, AlertCircle, Truck, BarChart3 } from 'lucide-react';
+import { DailyProductionChart } from '@/field-ops/components/charts/DailyProductionChart';
+import type { DashboardNavProps } from '@/field-ops/components/RoleBasedDashboard';
+import { SiteTasksScreen } from '@/field-ops/components/screens/SiteTasksScreen';
+
+/** Head Supervisor allocates vehicles to sites (Vehicles tab). Driver/operator assignment is done by Assistant Supervisor only. */
+export function HeadSupervisorDashboard({ onNavigateTab }: DashboardNavProps = {}) {
+  const { t } = useLocale();
+  const { sites, surveys, trips, machineSessions, assignedTrips } = useMockAppStore();
+  const [tasksSiteId, setTasksSiteId] = useState<string | null>(null);
+  const totalBudget = sites.reduce((sum, site) => sum + (site.budget ?? 0), 0);
+  const totalSpent = sites.reduce((sum, site) => sum + (site.spent ?? 0), 0);
+  const activeSites = sites.filter((s) => s.status === 'active').length;
+  const revenue = sites.reduce((sum, site) => {
+    const siteVolume = surveys
+      .filter((s) => s.status === 'approved' && s.siteId === site.id)
+      .reduce((v, s) => v + s.volumeM3, 0);
+    return sum + siteVolume * (site.contractRateRwf ?? 0);
+  }, 0);
+  const profit = revenue - totalSpent;
+
+  const dailyProductionData = useMemo(() => {
+    const approved = surveys.filter((s) => s.status === 'approved');
+    const byDate = new Map<string, number>();
+    for (const s of approved) {
+      const d = s.surveyDate.slice(0, 10);
+      byDate.set(d, (byDate.get(d) ?? 0) + s.volumeM3);
+    }
+    return Array.from(byDate.entries())
+      .map(([date, volumeM3]) => ({ date, volumeM3 }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [surveys]);
+
+  const stats = [
+    { icon: <Building2 size={24} color="#3B82F6" />, label: t('dashboard_active_sites'), value: activeSites.toString(), bg: 'bg-blue-50' },
+    { icon: <Banknote size={24} color="#10B981" />, label: t('dashboard_total_investment'), value: formatAmount(totalBudget, true), bg: 'bg-green-50' },
+    { icon: <MapPin size={24} color="#8B5CF6" />, label: t('dashboard_spent'), value: formatAmount(totalSpent, true), bg: 'bg-purple-50' },
+    { icon: <TrendingUp size={24} color="#059669" />, label: t('dashboard_profit'), value: formatAmount(profit, true), bg: profit >= 0 ? 'bg-emerald-50' : 'bg-red-50' },
+  ];
+
+  const selectedSite = tasksSiteId ? sites.find((s) => s.id === tasksSiteId) ?? null : null;
+
+  if (selectedSite) {
+    return (
+      <SiteTasksScreen
+        initialSiteId={selectedSite.id}
+        readOnly
+        onBack={() => setTasksSiteId(null)}
+      />
+    );
+  }
+
+  return (
+    <View style={styles.screen}>
+      <Header title={t('dashboard_head_supervisor_title')} subtitle={t('dashboard_head_supervisor_subtitle')} />
+      <DashboardLayout>
+        {onNavigateTab && (
+          <Card style={hsStyles.quickCard}>
+            <Text style={hsStyles.quickTitle}>{t('dashboard_quick_actions')}</Text>
+            <View style={hsStyles.quickRow}>
+              <TouchableOpacity onPress={() => onNavigateTab('vehicles')} style={hsStyles.quickBtn}>
+                <Truck size={18} color="#0ea5e9" />
+                <Text style={hsStyles.quickBtnText}>{t('tab_vehicles')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onNavigateTab('sites')} style={hsStyles.quickBtn}>
+                <Building2 size={18} color="#059669" />
+                <Text style={hsStyles.quickBtnText}>{t('dashboard_all_sites')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onNavigateTab('reports')} style={hsStyles.quickBtn}>
+                <FileText size={18} color="#2563eb" />
+                <Text style={hsStyles.quickBtnText}>{t('dashboard_generate_report')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onNavigateTab('surveys')} style={hsStyles.quickBtn}>
+                <MapPin size={18} color="#b45309" />
+                <Text style={hsStyles.quickBtnText}>{t('tab_surveys')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onNavigateTab('issues')} style={hsStyles.quickBtn}>
+                <AlertCircle size={18} color="#e11d48" />
+                <Text style={hsStyles.quickBtnText}>{t('tab_issues')}</Text>
+              </TouchableOpacity>
+            </View>
+          </Card>
+        )}
+        <View style={hsStyles.statsRow}>
+          {stats.map((stat, index) => (
+            <Card key={index} style={hsStyles.statCard}>
+              <View style={hsStyles.statContent}>
+                {stat.icon}
+                <Text style={hsStyles.statValue}>{stat.value}</Text>
+                <Text style={hsStyles.statLabel}>{stat.label}</Text>
+              </View>
+            </Card>
+          ))}
+        </View>
+        <Card style={hsStyles.quickCard}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <BarChart3 size={20} color={colors.primary} style={{ marginRight: 6 }} />
+            <Text style={hsStyles.quickTitle}>{t('dashboard_excavation_production')}</Text>
+          </View>
+          <Text style={[hsStyles.statLabel, { marginBottom: 6 }]}>{t('dashboard_daily_production')}</Text>
+          <DailyProductionChart
+            data={dailyProductionData}
+            maxBars={14}
+            emptyMessage={t('dashboard_no_production_data')}
+            onPressDate={onNavigateTab ? (date) => onNavigateTab('surveys', { filterByDate: date }) : undefined}
+          />
+        </Card>
+        {(() => {
+          const approvedTrips = assignedTrips.filter((a) => a.status === 'TRIP_COMPLETED');
+          const approvedTasks = assignedTrips.filter((a) => a.status === 'TASK_COMPLETED');
+          const hasFleet = approvedTrips.length > 0 || approvedTasks.length > 0;
+          if (!hasFleet) return null;
+          const completedTrips = trips.filter((tr) => tr.status === 'completed');
+          const completedSessions = machineSessions.filter((m) => m.status === 'completed');
+          const totalFuel = completedTrips.reduce((s, tr) => s + (tr.fuelConsumed ?? 0), 0) + completedSessions.reduce((s, m) => s + (m.fuelConsumed ?? 0), 0);
+          const totalDistance = completedTrips.reduce((s, tr) => s + (tr.distanceKm ?? 0), 0);
+          const totalHours = completedSessions.reduce((s, m) => s + (m.durationHours ?? 0), 0);
+          return (
+            <Card style={[hsStyles.quickCard, { marginBottom: layout.cardSpacingVertical }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <Truck size={20} color={colors.primary} style={{ marginRight: 6 }} />
+                <Text style={hsStyles.quickTitle}>{t('dashboard_fleet_trips_title')}</Text>
+              </View>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                <Text style={hsStyles.statLabel}>{t('dashboard_fleet_total_fuel')}: {totalFuel.toFixed(1)} L</Text>
+                <Text style={hsStyles.statLabel}>{t('dashboard_fleet_total_distance')}: {totalDistance.toFixed(0)} km</Text>
+                <Text style={hsStyles.statLabel}>{t('dashboard_fleet_total_hours')}: {totalHours.toFixed(1)} h</Text>
+              </View>
+              <Text style={[hsStyles.statLabel, { marginTop: 4, fontSize: 11 }]}>{t('dashboard_fleet_approved_by_as')}</Text>
+            </Card>
+          );
+        })()}
+        {sites.length > 0 && (
+          <View style={hsStyles.section}>
+            <Text style={hsStyles.sectionTitle}>{t('dashboard_site_locations')}</Text>
+            {sites.map((site) => (
+              <SiteCard key={site.id} site={site} onPress={() => setTasksSiteId(site.id)} />
+            ))}
+          </View>
+        )}
+      </DashboardLayout>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({ screen: { flex: 1, backgroundColor: colors.background } });
+const hsStyles = StyleSheet.create({
+  quickCard: { marginBottom: layout.cardSpacingVertical },
+  quickTitle: { fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: layout.grid },
+  quickRow: { flexDirection: 'row', flexWrap: 'wrap', gap: layout.grid },
+  quickBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, borderRadius: 8, backgroundColor: colors.gray100, borderWidth: 1, borderColor: colors.border },
+  quickBtnText: { color: colors.text, fontWeight: '500', marginLeft: 8 },
+  statsRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: layout.cardSpacingVertical },
+  statCard: { flexBasis: '48%', marginBottom: layout.cardSpacingVertical },
+  statContent: { alignItems: 'center', paddingVertical: layout.grid },
+  statValue: { fontSize: 18, fontWeight: '700', color: colors.text, marginTop: 8 },
+  statLabel: { fontSize: 12, color: colors.textSecondary, marginTop: 4 },
+  section: { marginBottom: layout.cardSpacingVertical },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: layout.grid,
+    letterSpacing: 0.4,
+  },
+});

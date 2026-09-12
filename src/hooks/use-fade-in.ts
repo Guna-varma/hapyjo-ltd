@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-export function useFadeInOnScroll() {
-  const ref = useRef<HTMLElement>(null);
+export function useFadeInOnScroll<T extends HTMLElement = HTMLElement>() {
+  const ref = useRef<T>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {

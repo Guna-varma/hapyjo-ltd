@@ -9,14 +9,22 @@ type ContactFormData = {
   message: string;
 };
 
+/** Minimal shapes of the Vercel Node request/response used here (no @vercel/node types installed). */
+type ContactRequest = { method?: string; body?: unknown };
+type ContactResponse = {
+  statusCode: number;
+  setHeader: (name: string, value: string) => void;
+  end: (body: string) => void;
+};
+
 // Simple helper to send a JSON response
-function json(res: any, statusCode: number, body: unknown) {
+function json(res: ContactResponse, statusCode: number, body: unknown) {
   res.statusCode = statusCode;
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify(body));
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: ContactRequest, res: ContactResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return json(res, 405, { ok: false, error: "Method not allowed" });
@@ -70,10 +78,10 @@ ${message || "-"}
     });
 
     return json(res, 200, { ok: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return json(res, 500, {
       ok: false,
-      error: error?.message || "Failed to send email via SMTP.",
+      error: error instanceof Error && error.message ? error.message : "Failed to send email via SMTP.",
     });
   }
 }

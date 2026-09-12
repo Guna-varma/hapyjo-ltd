@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    /**
+     * The Field Operations sources were written under `strict: true` (the mobile
+     * app's tsconfig), and rely on it: with strictNullChecks off, TypeScript stops
+     * narrowing discriminated unions by a boolean discriminant, so correct code
+     * such as `if (!result.ok) { result.error }` fails to compile.
+     *
+     * Checking this subtree under its original strictness keeps that code honest
+     * instead of loosening it, while the marketing site keeps its own settings.
+     */
+    /* vite/client types import.meta.env, which the Supabase client reads. */
+    "types": ["vite/client", "vitest/globals", "react", "react-dom"],
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false
+  },
+  "include": ["src/field-ops", "src/field-ops-main.tsx"],
+  /* Override the base config's exclude, which filters out this very subtree. */
+  "exclude": []
+}

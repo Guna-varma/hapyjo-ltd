@@ -27,5 +27,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  /* Checked separately by tsconfig.field-ops.json under stricter settings. */
+  "exclude": ["src/field-ops", "src/field-ops-main.tsx"]
 }

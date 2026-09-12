@@ -1,0 +1,74 @@
+import React from 'react';
+import { Text, TouchableOpacity, TouchableOpacityProps } from '@/field-ops/components/primitives';
+import { colors, dimensions } from '@/field-ops/theme/tokens';
+import { Loader } from '@/field-ops/components/ui/Loader';
+
+interface ButtonProps extends TouchableOpacityProps {
+  children: React.ReactNode;
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  loading?: boolean;
+}
+
+export function Button({
+  children,
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  disabled,
+  className = '',
+  style,
+  ...props
+}: ButtonProps) {
+  const variants = {
+    primary: 'bg-blue-600 active:bg-blue-700',
+    secondary: 'bg-gray-600 active:bg-gray-700',
+    outline: 'bg-white border-2 border-blue-600 active:bg-gray-50',
+    danger: 'bg-red-600 active:bg-red-700',
+  };
+
+  const textVariants = {
+    primary: 'text-white',
+    secondary: 'text-white',
+    outline: 'text-blue-600',
+    danger: 'text-white',
+  };
+
+  const sizes = {
+    sm: 'px-3 py-2',
+    md: 'px-4 py-3',
+    lg: 'px-6 py-4',
+  };
+
+  const textSizes = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg',
+  };
+
+  const isDisabled = disabled || loading;
+  const isTextChild = typeof children === 'string' || typeof children === 'number';
+
+  return (
+    <TouchableOpacity
+      className={`rounded-lg items-center justify-center min-h-[48px] ${variants[variant]} ${sizes[size]} ${
+        isDisabled ? 'opacity-50' : ''
+      } ${className}`}
+      style={[{ minHeight: dimensions.minTouchHeight }, style]}
+      disabled={isDisabled}
+      {...props}
+    >
+      {loading ? (
+        <Loader size={24} color={variant === 'outline' ? colors.primary : colors.surface} />
+      ) : (
+        isTextChild ? (
+          <Text className={`font-semibold ${textVariants[variant]} ${textSizes[size]}`}>
+            {children}
+          </Text>
+        ) : (
+          children
+        )
+      )}
+    </TouchableOpacity>
+  );
+}

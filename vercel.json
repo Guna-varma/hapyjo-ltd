@@ -20,6 +20,8 @@
     { "source": "/gallery-page-3", "destination": "/gallery-page-3.html" },
     { "source": "/gallery-page-4", "destination": "/gallery-page-4.html" },
     { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/app", "destination": "/app.html" },
+    { "source": "/app/(.*)", "destination": "/app.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
