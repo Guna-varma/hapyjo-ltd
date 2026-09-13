@@ -16,16 +16,17 @@ import { LoadingProvider } from '@/field-ops/context/LoadingContext';
 import { MockAppStoreProvider } from '@/field-ops/context/MockAppStoreContext';
 import { ToastProvider } from '@/field-ops/context/ToastContext';
 import { NotificationNavigationProvider } from '@/field-ops/context/NotificationNavigationContext';
-import { LocaleProvider, useLocale } from '@/field-ops/context/LocaleContext';
+import { LocaleProvider } from '@/field-ops/context/LocaleContext';
 import { SiteSelectionProvider } from '@/field-ops/context/SiteSelectionContext';
 import { LoginScreen } from '@/field-ops/components/auth/LoginScreen';
 import { AppNavigation } from '@/field-ops/components/navigation/AppNavigation';
 import { PushTokenRegistration } from '@/field-ops/components/PushTokenRegistration';
 import { AppErrorBoundary } from '@/field-ops/components/ui/AppErrorBoundary';
-import { ActivityIndicator, AlertHost, Text, View, useWindowDimensions } from '@/field-ops/components/primitives';
+import { AlertHost, View } from '@/field-ops/components/primitives';
 import { getTabsForRole } from '@/field-ops/lib/rbac';
 import { APP_BASENAME, LOGIN_PATH, pathForTab } from '@/field-ops/lib/appRoutes';
 import * as Location from '@/field-ops/lib/location';
+import { TruckLoader } from '@/field-ops/components/ui/TruckLoader';
 
 /**
  * Requests location permission shortly after the app opens so it can be granted
@@ -55,11 +56,8 @@ function RequestLocationPermissionOnAppOpen() {
   return null;
 }
 
-/** Full-screen loader shown until the first session check completes. */
+/** Full-screen truck loader until the first session check completes. */
 function AuthLoadingScreen() {
-  const { t } = useLocale();
-  const { width } = useWindowDimensions();
-  const fontSize = Math.max(14, Math.min(18, width * 0.045));
   return (
     <View
       style={{
@@ -67,11 +65,10 @@ function AuthLoadingScreen() {
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#f8fafc',
-        padding: Math.max(16, width * 0.05),
+        paddingHorizontal: 24,
       }}
     >
-      <ActivityIndicator size="large" color="#1e40af" />
-      <Text style={{ marginTop: 12, fontSize, color: '#475569' }}>{t('common_loading')}</Text>
+      <TruckLoader />
     </View>
   );
 }

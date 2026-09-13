@@ -1,8 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from '@/field-ops/components/primitives';
-import { Loader } from '@/field-ops/components/ui/Loader';
+import { StyleSheet, View } from '@/field-ops/components/primitives';
+import { TruckLoader } from '@/field-ops/components/ui/TruckLoader';
 import { useLocale } from '@/field-ops/context/LocaleContext';
-import { colors, radius } from '@/field-ops/theme/tokens';
 
 type LoadingContextValue = {
   /** Show global centered loader. Call hideLoading when done. */
@@ -17,8 +16,8 @@ type LoadingContextValue = {
 const LoadingContext = createContext<LoadingContextValue | null>(null);
 
 /**
- * Keeps a single neat full-screen loader for every interaction. Nested
- * show/hide calls are ref-counted so overlapping work does not flicker off early.
+ * Single full-screen truck loader for every interaction. Nested show/hide calls
+ * are ref-counted so overlapping work does not flicker off early.
  */
 export function LoadingProvider({ children }: { children: React.ReactNode }) {
   const { t } = useLocale();
@@ -51,11 +50,15 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
     <LoadingContext.Provider value={{ showLoading, hideLoading, withLoading, loading }}>
       {children}
       {loading && (
-        <View style={styles.root} pointerEvents="box-only" accessibilityRole="progressbar" accessibilityLabel={t('common_loading')}>
+        <View
+          style={styles.root}
+          pointerEvents="box-only"
+          accessibilityRole="progressbar"
+          accessibilityLabel={t('common_loading')}
+        >
           <View style={styles.backdrop} />
-          <View style={styles.card}>
-            <Loader size={40} />
-            <Text style={styles.label}>{t('common_loading')}</Text>
+          <View style={styles.center}>
+            <TruckLoader />
           </View>
         </View>
       )}
@@ -70,8 +73,7 @@ export function useLoading(): LoadingContextValue {
 }
 
 /**
- * Mirror a local busy flag onto the global loader (forms, buttons, modals).
- * Cleanup always hides when the flag drops or the component unmounts mid-work.
+ * Mirror a local busy flag onto the global truck loader.
  */
 export function useBusyLoading(busy: boolean): void {
   const { showLoading, hideLoading } = useLoading();
@@ -92,26 +94,13 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(15, 23, 42, 0.28)',
+    backgroundColor: 'rgba(248, 250, 252, 0.72)',
   },
-  card: {
-    minWidth: 132,
-    paddingVertical: 22,
-    paddingHorizontal: 28,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
+  center: {
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
-    shadowColor: '#0f172a',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textSecondary,
+    width: '100%',
+    maxWidth: 280,
+    paddingHorizontal: 24,
   },
 });
