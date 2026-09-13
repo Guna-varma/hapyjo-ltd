@@ -67,12 +67,13 @@ export const layout = {
   minTouchHeight: 48,
 } as const;
 
-/** Form consistency: input radius 8px, padding 12px, label 14px, button height 48px. inputFontSize 16 prevents iOS zoom. */
+/** Form consistency: compact 44px actions, 16px inputs (prevents iOS zoom). */
 export const form = {
   inputRadius: 8,
   inputPadding: 12,
   labelFontSize: 14,
-  buttonHeight: 48,
+  buttonHeight: 44,
+  buttonFontSize: 14,
   /** 48–52px for touch-friendly inputs */
   inputMinHeight: 48,
   inputMaxHeight: 52,

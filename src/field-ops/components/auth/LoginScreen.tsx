@@ -54,7 +54,7 @@ export function LoginScreen() {
   };
 
   const signInButton = (
-    <Button onPress={handleLogin} loading={loading} className="w-full" style={{ minHeight: 48 }}>
+    <Button onPress={handleLogin} loading={loading} fullWidth>
       {t('login_title')}
     </Button>
   );

@@ -605,6 +605,9 @@ function useSupabaseStore(): MockAppStoreContextValue {
     if (!authUser?.id) {
       initialFetchDoneRef.current = false;
       hasLoadedRef.current = false;
+      setState(emptyState);
+      setUnreadNotificationCount(0);
+      setLoading(false);
       return;
     }
     if (initialFetchDoneRef.current) return;

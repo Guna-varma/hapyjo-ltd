@@ -10,11 +10,12 @@ import { getRoleDisplayLabel } from '@/field-ops/lib/rbac';
 import { DriverProfileScreen } from '@/field-ops/components/screens/DriverProfileScreen';
 import { supabase } from '@/field-ops/lib/supabase';
 import { User, Bell, Globe, LogOut, Lock, Eye, EyeOff } from 'lucide-react';
-import { useBusyLoading } from '@/field-ops/context/LoadingContext';
+import { useBusyLoading, useLoading } from '@/field-ops/context/LoadingContext';
 
 export function SettingsScreen() {
   const { user, logout } = useAuth();
   const { t, locale, setLocale } = useLocale();
+  const { withLoading } = useLoading();
   const theme = useResponsiveTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
@@ -62,7 +63,9 @@ export function SettingsScreen() {
         {
           text: t('settings_sign_out'),
           style: 'destructive',
-          onPress: logout,
+          onPress: () => {
+            void withLoading(() => logout());
+          },
         },
       ]
     );
@@ -178,10 +181,10 @@ export function SettingsScreen() {
           </Card>
         </View>
 
-        <Button variant="danger" onPress={handleLogout} className="mb-6">
-          <View className="flex-row items-center">
+        <Button variant="danger" onPress={handleLogout} fullWidth style={{ marginBottom: 24 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <LogOut size={18} color="#ffffff" />
-            <Text className="text-white font-semibold ml-2">{t('settings_sign_out')}</Text>
+            <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 14 }}>{t('settings_sign_out')}</Text>
           </View>
         </Button>
       </ScrollView>

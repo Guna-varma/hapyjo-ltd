@@ -128,9 +128,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await showSystemNotification('Hapyjo', 'You are signed out.');
-    await supabase.auth.signOut();
+    // Clear local auth immediately so the UI leaves the session without waiting
+    // on network / notification delays (those used to leave the user "stuck").
     setUser(null);
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch {
+      try {
+        await supabase.auth.signOut({ scope: 'local' });
+      } catch {
+        /* local storage may already be cleared */
+      }
+    }
+    void showSystemNotification('Hapyjo', 'You are signed out.');
   };
 
   const refreshUser = (next: User | null) => {

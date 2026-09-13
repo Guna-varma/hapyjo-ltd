@@ -155,9 +155,15 @@ export function AppNavigation() {
   const handleLogout = useCallback(() => {
     Alert.alert(t('settings_confirm_logout'), t('settings_confirm_logout_message'), [
       { text: t('common_cancel'), style: 'cancel' },
-      { text: t('settings_sign_out'), style: 'destructive', onPress: () => logout() },
+      {
+        text: t('settings_sign_out'),
+        style: 'destructive',
+        onPress: () => {
+          void withLoading(() => logout());
+        },
+      },
     ]);
-  }, [t, logout]);
+  }, [t, logout, withLoading]);
 
   const tabIdsKey = tabIds.join(',');
   /**

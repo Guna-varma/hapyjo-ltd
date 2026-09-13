@@ -216,7 +216,7 @@ export function TaskDetailScreen({ task, onBack }: TaskDetailScreenProps) {
           <Text className="text-sm font-bold text-gray-900 mb-2">{t('task_actions')}</Text>
           
           {currentTask.status === 'pending' && (
-            <Button onPress={handleStartTask} loading={loading} size="sm" className="mb-2">
+            <Button onPress={handleStartTask} loading={loading} size="sm" style={{ marginBottom: 8 }}>
               <View className="flex-row items-center">
                 <AlertCircle size={16} color="#ffffff" />
                 <Text className="text-white font-semibold ml-2 text-sm">{t('task_start_task')}</Text>

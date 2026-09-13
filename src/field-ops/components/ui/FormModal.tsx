@@ -3,7 +3,7 @@ import { ActivityIndicator, Haptics, Keyboard, KeyboardAvoidingView, Modal, Plat
 import { FormScrollProvider, getKeyboardSafePaddingBottom } from '@/field-ops/context/FormScrollContext';
 import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 import { modalStyles } from '@/field-ops/components/ui/modalStyles';
-import { colors, spacing, scrollConfig } from '@/field-ops/theme/tokens';
+import { colors, form, spacing, scrollConfig } from '@/field-ops/theme/tokens';
 import { useModalLayout } from '@/field-ops/theme/modalLayout';
 
 interface FormModalProps {
@@ -91,7 +91,7 @@ export function FormModal({
                     }}
                     style={[modalStyles.btn, modalStyles.btnSecondary]}
                   >
-                    <Text style={modalStyles.btnTextSecondary}>{secondaryLabel}</Text>
+                    <Text style={modalStyles.btnTextSecondary} numberOfLines={1}>{secondaryLabel}</Text>
                   </Pressable>
                 )}
                 <Pressable
@@ -102,7 +102,7 @@ export function FormModal({
                   {submitting ? (
                     <ActivityIndicator size="small" color={colors.surface} />
                   ) : (
-                    <Text style={styles.primaryBtnText}>{primaryLabel}</Text>
+                    <Text style={styles.primaryBtnText} numberOfLines={1}>{primaryLabel}</Text>
                   )}
                 </Pressable>
               </View>
@@ -139,11 +139,13 @@ const styles = StyleSheet.create({
     // Keeps the primary action tappable when the footer wraps on narrow phones.
     minWidth: 120,
     backgroundColor: colors.primary,
-    minHeight: 48,
+    minHeight: form.buttonHeight,
+    height: form.buttonHeight,
   },
   primaryBtnText: {
     color: colors.surface,
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: form.buttonFontSize,
+    textAlign: 'center',
   },
 });

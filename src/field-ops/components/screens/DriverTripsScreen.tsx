@@ -17,6 +17,7 @@ import { getNextDriverStatus, getEffectiveDurationHours, canEndTrip, ASSIGNED_TR
 import { formatDateTime, formatTime } from '@/field-ops/lib/dateFormat';
 import { categorizeError, ERROR_CATEGORY_TITLE_KEYS } from '@/field-ops/lib/errorCategories';
 import { TripPhotoCaptureModal } from '@/field-ops/components/trips/TripPhotoCaptureModal';
+import { Button } from '@/field-ops/components/ui/Button';
 import { canSubmitTripEndAction } from '@/field-ops/lib/tripEndActionGuard';
 import {
   validateAndPrepareWorkPhoto,
@@ -1382,13 +1383,13 @@ export function DriverTripsScreen() {
               <Text className="text-lg font-bold text-gray-900 text-center">{t('location_permission_title')}</Text>
             </View>
             <Text className="text-sm text-gray-600 text-center mb-6">{t('location_permission_message')}</Text>
-            <View className="flex-row gap-3">
-              <TouchableOpacity onPress={() => setLocationPermissionModalVisible(false)} className="flex-1 py-3 rounded-lg bg-gray-200 items-center">
-                <Text className="font-semibold text-gray-700">{t('location_permission_not_now')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={requestLocationAndClosePermissionModal} className="flex-1 py-3 rounded-lg bg-blue-600 items-center">
-                <Text className="font-semibold text-white">{t('location_permission_allow')}</Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Button variant="muted" onPress={() => setLocationPermissionModalVisible(false)} style={{ flex: 1 }}>
+                {t('location_permission_not_now')}
+              </Button>
+              <Button variant="primary" onPress={requestLocationAndClosePermissionModal} style={{ flex: 1 }}>
+                {t('location_permission_allow')}
+              </Button>
             </View>
           </View>
         </View>
@@ -1396,62 +1397,63 @@ export function DriverTripsScreen() {
 
       <Modal visible={endTripModalVisible} transparent animationType="slide">
         <View className="flex-1 justify-center bg-black/50 px-4">
-          <View className="bg-white rounded-2xl p-6">
+          <View className="bg-white rounded-2xl p-5">
             <View className="items-center mb-3">
-              <View className="w-12 h-12 rounded-full bg-amber-100 items-center justify-center mb-2">
-                <Camera size={24} color="#d97706" />
+              <View className="w-11 h-11 rounded-full bg-amber-100 items-center justify-center mb-2">
+                <Camera size={22} color="#d97706" />
               </View>
               <Text className="text-lg font-bold text-gray-900 text-center">{t('trip_end_modal_title')}</Text>
             </View>
             <Text className="text-sm text-gray-600 text-center mb-2">{isTruck ? t('trip_end_modal_message_required') : t('trip_end_modal_message_required_machine')}</Text>
-            {isTruck && <Text className="text-xs text-amber-600 text-center mb-4">{t('trip_end_photo_speedometer_hint')}</Text>}
+            {isTruck && <Text className="text-xs text-amber-600 text-center mb-3">{t('trip_end_photo_speedometer_hint')}</Text>}
             {!endPhoto ? (
-              <View className="gap-3">
-                <TouchableOpacity
+              <View style={{ gap: 10 }}>
+                <Button
+                  variant="warning"
+                  fullWidth
                   onPress={takeEndPhoto}
+                  loading={takingEndPhoto}
                   disabled={takingEndPhoto}
-                  className="py-3 rounded-lg bg-amber-500 items-center flex-row justify-center"
                 >
-                  {takingEndPhoto ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <>
-                      <Camera size={18} color="#fff" style={{ marginRight: 8 }} />
-                      <Text className="font-semibold text-white">{t('trip_end_add_photo')}</Text>
-                    </>
-                  )}
+                  {t('trip_end_add_photo')}
+                </Button>
+                <TouchableOpacity
+                  onPress={() => {
+                    endingAssignedTripRef.current = null;
+                    setEndTripModalVisible(false);
+                    setEndPhoto(null);
+                  }}
+                  style={{ paddingVertical: 8, alignItems: 'center' }}
+                >
+                  <Text className="text-sm text-gray-500">{t('common_cancel')}</Text>
                 </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      endingAssignedTripRef.current = null;
-                      setEndTripModalVisible(false);
-                      setEndPhoto(null);
-                    }}
-                    className="py-2 items-center"
-                  >
-                    <Text className="text-sm text-gray-500">{t('common_cancel')}</Text>
-                  </TouchableOpacity>
               </View>
             ) : (
-              <View className="gap-3">
+              <View style={{ gap: 10 }}>
                 <Image source={{ uri: endPhoto.uri }} style={{ width: '100%', height: 140, borderRadius: 12, backgroundColor: '#f3f4f6' }} resizeMode="cover" />
                 {endPhoto.lat != null && endPhoto.lon != null ? (
                   <Text className="text-xs text-gray-500">GPS: {endPhoto.lat.toFixed(5)}, {endPhoto.lon.toFixed(5)}</Text>
                 ) : (
                   <Text className="text-xs text-gray-500">{t('trip_end_gps_recorded_on_confirm')}</Text>
                 )}
-                <View className="flex-row gap-2">
-                  <TouchableOpacity onPress={() => setEndPhoto(null)} disabled={endingInProgress} className="flex-1 py-2 rounded-lg bg-gray-200 items-center">
-                    <Text className="font-semibold text-gray-700">{t('trip_end_retake')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => void endTripWithGpsPhoto()}
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  <Button
+                    variant="muted"
+                    onPress={() => setEndPhoto(null)}
                     disabled={endingInProgress}
-                    activeOpacity={0.8}
-                    className="flex-1 py-3 rounded-lg bg-amber-500 items-center justify-center min-h-[44px]"
+                    style={{ flex: 1 }}
                   >
-                    {endingInProgress ? <ActivityIndicator size="small" color="#fff" /> : <Text className="font-semibold text-white">{t('trip_end_use_photo')}</Text>}
-                  </TouchableOpacity>
+                    {t('trip_end_retake')}
+                  </Button>
+                  <Button
+                    variant="warning"
+                    onPress={() => void endTripWithGpsPhoto()}
+                    loading={endingInProgress}
+                    disabled={endingInProgress}
+                    style={{ flex: 1.4 }}
+                  >
+                    {t('trip_end_use_photo')}
+                  </Button>
                 </View>
                 <TouchableOpacity
                   onPress={() => {
@@ -1460,7 +1462,7 @@ export function DriverTripsScreen() {
                     setEndPhoto(null);
                   }}
                   disabled={endingInProgress}
-                  className="py-2 items-center"
+                  style={{ paddingVertical: 8, alignItems: 'center' }}
                 >
                   <Text className="text-sm text-gray-500">{t('common_cancel')}</Text>
                 </TouchableOpacity>
@@ -1493,20 +1495,16 @@ export function DriverTripsScreen() {
             </View>
             {isTruck && !startPhoto && (
               <>
-                <TouchableOpacity
+                <Button
+                  variant="warning"
+                  fullWidth
                   onPress={takeStartPhoto}
+                  loading={takingStartPhoto}
                   disabled={takingStartPhoto}
-                  className="mb-4 py-3 rounded-lg bg-amber-500 flex-row items-center justify-center"
+                  style={{ marginBottom: 12 }}
                 >
-                  {takingStartPhoto ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <>
-                      <Camera size={20} color="#fff" style={{ marginRight: 8 }} />
-                      <Text className="font-semibold text-white">{t('trip_start_take_gps_photo')}</Text>
-                    </>
-                  )}
-                </TouchableOpacity>
+                  {t('trip_start_take_gps_photo')}
+                </Button>
                 <Text className="text-xs text-gray-500 mb-2">{t('trip_start_photo_hint')}</Text>
                 <Text className="text-xs text-amber-600 mb-2">{t('trip_start_photo_speedometer_hint')}</Text>
               </>
@@ -1515,10 +1513,10 @@ export function DriverTripsScreen() {
               <View className="mb-4">
                 <Image source={{ uri: startPhoto.uri }} style={{ width: '100%', height: 160, borderRadius: 12, backgroundColor: '#f3f4f6' }} resizeMode="cover" />
                 <Text className="text-xs text-gray-500 mt-2">{t('trip_start_gps_on_confirm')}</Text>
-                <View className="flex-row gap-2 mt-2">
-                  <TouchableOpacity onPress={() => setStartPhoto(null)} className="flex-1 py-2 rounded-lg bg-gray-200 items-center">
-                    <Text className="font-semibold text-gray-700">{t('trip_retake_photo')}</Text>
-                  </TouchableOpacity>
+                <View style={{ marginTop: 8 }}>
+                  <Button variant="muted" fullWidth onPress={() => setStartPhoto(null)}>
+                    {t('trip_retake_photo')}
+                  </Button>
                 </View>
               </View>
             )}
@@ -1542,17 +1540,18 @@ export function DriverTripsScreen() {
                 />
               </>
             )}
-            <View className="flex-row gap-3">
-              <TouchableOpacity onPress={() => { setStartModalVisible(false); setStartPhoto(null); }} className="flex-1 py-3 rounded-lg bg-gray-200 items-center">
-                <Text className="font-semibold text-gray-700">{t('general_cancel')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Button variant="muted" onPress={() => { setStartModalVisible(false); setStartPhoto(null); }} style={{ flex: 1 }}>
+                {t('general_cancel')}
+              </Button>
+              <Button
+                variant="primary"
                 onPress={isTruck ? handleStartTrip : handleStartSession}
                 disabled={isTruck && !startPhoto}
-                className={`flex-1 py-3 rounded-lg items-center ${isTruck && !startPhoto ? 'bg-gray-400' : 'bg-blue-600'}`}
+                style={{ flex: 1 }}
               >
-                <Text className="font-semibold text-white">{t('general_start')}</Text>
-              </TouchableOpacity>
+                {t('general_start')}
+              </Button>
             </View>
           </View>
         </View>
@@ -1565,13 +1564,13 @@ export function DriverTripsScreen() {
             <Text className="text-sm text-gray-600 mb-4">
               {t('driver_end_work_hint')}
             </Text>
-            <View className="flex-row gap-3">
-              <TouchableOpacity onPress={() => setEndSessionModalVisible(false)} className="flex-1 py-3 rounded-lg bg-gray-200 items-center">
-                <Text className="font-semibold text-gray-700">{t('general_cancel')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleEndSession} className="flex-1 py-3 rounded-lg bg-blue-600 items-center">
-                <Text className="font-semibold text-white">{t('general_end')}</Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Button variant="muted" onPress={() => setEndSessionModalVisible(false)} style={{ flex: 1 }}>
+                {t('general_cancel')}
+              </Button>
+              <Button variant="primary" onPress={handleEndSession} style={{ flex: 1 }}>
+                {t('general_end')}
+              </Button>
             </View>
           </View>
         </View>
@@ -1602,13 +1601,13 @@ export function DriverTripsScreen() {
               keyboardType="decimal-pad"
               className="border border-gray-300 rounded-lg px-3 py-2 mb-4 bg-white"
             />
-            <View className="flex-row gap-3">
-              <TouchableOpacity onPress={() => setRefuelModalVisible(false)} className="flex-1 py-3 rounded-lg bg-gray-200 items-center">
-                <Text className="font-semibold text-gray-700">{t('general_cancel')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleMidShiftRefuel} className="flex-1 py-3 rounded-lg bg-blue-600 items-center">
-                <Text className="font-semibold text-white">{t('driver_add_fuel')}</Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Button variant="muted" onPress={() => setRefuelModalVisible(false)} style={{ flex: 1 }}>
+                {t('general_cancel')}
+              </Button>
+              <Button variant="primary" onPress={handleMidShiftRefuel} style={{ flex: 1 }}>
+                {t('driver_add_fuel')}
+              </Button>
             </View>
           </View>
         </View>
