@@ -9,6 +9,7 @@ import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
 import { useToast } from '@/field-ops/context/ToastContext';
 import { useSiteSelection } from '@/field-ops/context/SiteSelectionContext';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 import { formatAmount } from '@/field-ops/lib/currency';
 import { formatDateTime } from '@/field-ops/lib/dateFormat';
 import { colors, spacing, radius, scrollConfig } from '@/field-ops/theme/tokens';
@@ -98,6 +99,7 @@ export function AssistantSupervisorDashboard({ onNavigateTab }: DashboardNavProp
   const [detailReviseMode, setDetailReviseMode] = useState(false);
   const [detailSubmitting, setDetailSubmitting] = useState(false);
   const [tripPhotoPreview, setTripPhotoPreview] = useState<{ uri: string; label: string } | null>(null);
+  useBusyLoading(savingPhone || assignSaving || detailSubmitting);
 
   const siteIds = useMemo(() => user?.siteAccess ?? [], [user?.siteAccess]);
   /**

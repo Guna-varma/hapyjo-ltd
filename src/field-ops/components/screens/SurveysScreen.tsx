@@ -10,6 +10,7 @@ import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
 import { useSiteSelection } from '@/field-ops/context/SiteSelectionContext';
 import { useToast } from '@/field-ops/context/ToastContext';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 import { useResponsiveTheme } from '@/field-ops/theme/responsive';
 import { parseSurveyFileContent, computeWorkVolume, computeCubature, parseAndMergeSurveyFiles } from '@/field-ops/lib/surveyParser';
 import { generateId } from '@/field-ops/lib/id';
@@ -97,6 +98,7 @@ export function SurveysScreen({ initialOpenNewSurveyModal, onClearOpenNewSurveyM
   const [revisingSurveyId, setRevisingSurveyId] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState<string | null>(initialSurveyDateFilter ?? null);
   const [exportingPdfId, setExportingPdfId] = useState<string | null>(null);
+  useBusyLoading(exportingPdfId != null);
 
   useEffect(() => {
     if (initialSurveyDateFilter) setDateFilter(initialSurveyDateFilter);

@@ -137,8 +137,17 @@ export function LoginScreen() {
           enterKeyHint="done"
           onSubmitEditing={handleLogin}
           rightElement={
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-              {showPassword ? <EyeOff size={22} color="#6B7280" /> : <Eye size={22} color="#6B7280" />}
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              accessibilityRole="button"
+              style={{
+                width: 44,
+                height: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {showPassword ? <EyeOff size={20} color="#6B7280" /> : <Eye size={20} color="#6B7280" />}
             </TouchableOpacity>
           }
         />

@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, Dimensions, Haptics, Platform, SafeAreaView, 
 import { useAuth } from '@/field-ops/context/AuthContext';
 import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
+import { useLoading } from '@/field-ops/context/LoadingContext';
 import { useNotificationNavigation } from '@/field-ops/context/NotificationNavigationContext';
 import { useResponsiveTheme } from '@/field-ops/theme/responsive';
 import { colors, dimensions, scrollConfig } from '@/field-ops/theme/tokens';
@@ -84,6 +85,7 @@ export function AppNavigation() {
   const { user, logout } = useAuth();
   const { t } = useLocale();
   const { refetch, loading, unreadNotificationCount } = useMockAppStore();
+  const { withLoading } = useLoading();
   const topInset = useTopSafeInset();
   const insets = useSafeAreaInsets();
   const theme = useResponsiveTheme();
@@ -144,11 +146,11 @@ export function AppNavigation() {
     if (refreshing) return;
     setRefreshing(true);
     try {
-      await refetch();
+      await withLoading(() => refetch());
     } finally {
       setRefreshing(false);
     }
-  }, [refetch, refreshing]);
+  }, [refetch, refreshing, withLoading]);
 
   const handleLogout = useCallback(() => {
     Alert.alert(t('settings_confirm_logout'), t('settings_confirm_logout_message'), [

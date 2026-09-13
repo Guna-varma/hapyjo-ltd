@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { ActivityIndicator, Haptics, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, useSafeAreaInsets, useWindowDimensions, View } from '@/field-ops/components/primitives';
 import { FormScrollProvider, getKeyboardSafePaddingBottom } from '@/field-ops/context/FormScrollContext';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 import { modalStyles } from '@/field-ops/components/ui/modalStyles';
 import { colors, spacing, scrollConfig } from '@/field-ops/theme/tokens';
 import { useModalLayout } from '@/field-ops/theme/modalLayout';
@@ -39,6 +40,7 @@ export function FormModal({
   const modal = useModalLayout(0.85);
   const maxHeight = modal.height;
   const keyboardSafePaddingBottom = getKeyboardSafePaddingBottom(height);
+  useBusyLoading(visible && submitting);
 
   const handlePrimary = async () => {
     const result = onPrimary();

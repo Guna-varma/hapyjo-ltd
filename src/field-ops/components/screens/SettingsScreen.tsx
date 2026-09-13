@@ -10,6 +10,7 @@ import { getRoleDisplayLabel } from '@/field-ops/lib/rbac';
 import { DriverProfileScreen } from '@/field-ops/components/screens/DriverProfileScreen';
 import { supabase } from '@/field-ops/lib/supabase';
 import { User, Bell, Globe, LogOut, Lock, Eye, EyeOff } from 'lucide-react';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 
 export function SettingsScreen() {
   const { user, logout } = useAuth();
@@ -24,6 +25,7 @@ export function SettingsScreen() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+  useBusyLoading(changingPassword);
 
   const handleChangePassword = async () => {
     const pwd = newPassword.trim();
@@ -213,28 +215,34 @@ export function SettingsScreen() {
             <Text className="text-lg font-bold mb-2">{t('settings_change_password_modal_title')}</Text>
             <Text className="text-sm text-gray-600 mb-4">{t('settings_new_password_confirm_hint')}</Text>
             <Text className="text-sm text-gray-700 mb-1">{t('settings_new_password_required')}</Text>
-            <View className="flex-row items-center border border-gray-300 rounded-lg px-3 py-2 mb-3 bg-white">
+            <View className="flex-row items-center border border-gray-300 rounded-lg mb-3 bg-white overflow-hidden" style={{ minHeight: 48 }}>
               <TextInput
                 value={newPassword}
                 onChangeText={setNewPassword}
                 placeholder={t('settings_new_password_placeholder')}
                 secureTextEntry={!showNewPassword}
-                className="flex-1 text-base text-gray-900"
+                className="flex-1 text-base text-gray-900 px-3 py-2"
               />
-              <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
+              <TouchableOpacity
+                onPress={() => setShowNewPassword(!showNewPassword)}
+                style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }}
+              >
                 {showNewPassword ? <EyeOff size={20} color="#6B7280" /> : <Eye size={20} color="#6B7280" />}
               </TouchableOpacity>
             </View>
             <Text className="text-sm text-gray-700 mb-1">{t('settings_confirm_password_required')}</Text>
-            <View className="flex-row items-center border border-gray-300 rounded-lg px-3 py-2 mb-4 bg-white">
+            <View className="flex-row items-center border border-gray-300 rounded-lg mb-4 bg-white overflow-hidden" style={{ minHeight: 48 }}>
               <TextInput
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 placeholder={t('settings_confirm_password_placeholder')}
                 secureTextEntry={!showConfirmPassword}
-                className="flex-1 text-base text-gray-900"
+                className="flex-1 text-base text-gray-900 px-3 py-2"
               />
-              <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+              <TouchableOpacity
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }}
+              >
                 {showConfirmPassword ? <EyeOff size={20} color="#6B7280" /> : <Eye size={20} color="#6B7280" />}
               </TouchableOpacity>
             </View>

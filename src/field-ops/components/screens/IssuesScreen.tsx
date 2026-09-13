@@ -21,6 +21,7 @@ import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
 import { useSiteSelection } from '@/field-ops/context/SiteSelectionContext';
 import { useToast } from '@/field-ops/context/ToastContext';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 import { useResponsiveTheme } from '@/field-ops/theme/responsive';
 import { generateId } from '@/field-ops/lib/id';
 import { uploadIssueImage, getIssueImagePublicUrl } from '@/field-ops/lib/issueImageStorage';
@@ -91,6 +92,7 @@ export function IssuesScreen() {
   const { showToast } = useToast();
   const [refreshing, setRefreshing] = useState(false);
   const [updatingIssueId, setUpdatingIssueId] = useState<string | null>(null);
+  useBusyLoading(updatingIssueId != null);
   /** Add issue: only Assistant Supervisor, Driver, Operator (per Issue Reporting System). */
   const canRaise =
     user?.role === 'driver_truck' ||

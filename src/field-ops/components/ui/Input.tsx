@@ -128,7 +128,9 @@ export function Input({
             {...(enterKeyHint != null ? { enterKeyHint } : {})}
             {...textInputProps}
           />
-          <View style={styles.rightElement}>{rightElement}</View>
+          <View style={styles.rightElement} pointerEvents="box-none">
+            {rightElement}
+          </View>
         </View>
       ) : (
         <TextInput
@@ -170,7 +172,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   rightElement: {
-    paddingRight: 12,
+    width: 48,
+    minHeight: 48,
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   },
   inputError: {
     borderColor: colors.error,

@@ -2,6 +2,7 @@ import React from 'react';
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TouchableWithoutFeedback, useSafeAreaInsets, View } from '@/field-ops/components/primitives';
 import { colors, radius, spacing, scrollConfig } from '@/field-ops/theme/tokens';
 import { useModalLayout } from '@/field-ops/theme/modalLayout';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 
 interface ModalWithKeyboardProps {
   visible: boolean;
@@ -23,6 +24,7 @@ export function ModalWithKeyboard({
   const insets = useSafeAreaInsets();
   const modal = useModalLayout(maxHeightRatio);
   const maxHeight = modal.height;
+  useBusyLoading(visible && submitting);
 
   return (
     <Modal

@@ -10,6 +10,7 @@ import type { AssignedTrip, Vehicle } from '@/field-ops/types';
 import { getTripPhotoPublicUrl } from '@/field-ops/lib/tripPhotoStorage';
 import { saveImageToDevice } from '@/field-ops/lib/saveImageToDevice';
 import { useLocale } from '@/field-ops/context/LocaleContext';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 
 interface AssignedTripApprovalModalProps {
   visible: boolean;
@@ -37,6 +38,7 @@ export function AssignedTripApprovalModal({
   const [endReading, setEndReading] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [downloadingPhoto, setDownloadingPhoto] = useState<'start' | 'end' | null>(null);
+  useBusyLoading(visible && (submitting || downloadingPhoto != null));
 
   const handleDownloadPhoto = async (url: string, kind: 'start' | 'end') => {
     setDownloadingPhoto(kind);

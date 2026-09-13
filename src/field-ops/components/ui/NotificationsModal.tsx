@@ -4,6 +4,7 @@ import { UnifiedModal } from '@/field-ops/components/ui/UnifiedModal';
 import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
 import { useToast } from '@/field-ops/context/ToastContext';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 import { modalStyles } from '@/field-ops/components/ui/modalStyles';
 import { formatDayLabel, formatTime } from '@/field-ops/lib/dateFormat';
 import { colors, spacing } from '@/field-ops/theme/tokens';
@@ -25,6 +26,7 @@ export function NotificationsModal({ visible, onClose }: NotificationsModalProps
     clearAllNotifications,
   } = useMockAppStore();
   const [markingAll, setMarkingAll] = useState(false);
+  useBusyLoading(visible && markingAll);
 
   const handleClearAll = () => {
     Alert.alert(

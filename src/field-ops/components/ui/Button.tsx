@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps } from '@/field-ops/components/primitives';
 import { colors, dimensions } from '@/field-ops/theme/tokens';
 import { Loader } from '@/field-ops/components/ui/Loader';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 
 interface ButtonProps extends TouchableOpacityProps {
   children: React.ReactNode;
@@ -20,6 +21,7 @@ export function Button({
   style,
   ...props
 }: ButtonProps) {
+  useBusyLoading(!!loading);
   const variants = {
     primary: 'bg-blue-600 active:bg-blue-700',
     secondary: 'bg-gray-600 active:bg-gray-700',

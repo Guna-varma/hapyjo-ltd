@@ -9,6 +9,7 @@ import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
 import { formatAmount } from '@/field-ops/lib/currency';
 import type { DashboardNavProps } from '@/field-ops/components/RoleBasedDashboard';
 import { useLocale } from '@/field-ops/context/LocaleContext';
+import { useBusyLoading } from '@/field-ops/context/LoadingContext';
 import { canAccessTab } from '@/field-ops/lib/rbac';
 import { TrendingUp, Banknote, PieChart, Plus, FileText, Building2, Users, Globe, BarChart3, Truck, ClipboardCheck } from 'lucide-react';
 import { DailyProductionChart } from '@/field-ops/components/charts/DailyProductionChart';
@@ -29,6 +30,7 @@ export function OwnerDashboard({ onNavigateTab }: DashboardNavProps) {
   const [contractDetailsInput, setContractDetailsInput] = useState('');
   const [rateSaving, setRateSaving] = useState(false);
   const [rateError, setRateError] = useState<string | null>(null);
+  useBusyLoading(rateModalVisible && rateSaving);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [detailsSiteId, setDetailsSiteId] = useState<string | null>(null);
   const [dateFrom] = useState('');
