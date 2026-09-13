@@ -8,7 +8,9 @@ import { useAuth } from '@/field-ops/context/AuthContext';
 import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
 import { useToast } from '@/field-ops/context/ToastContext';
+import { useSiteSelection } from '@/field-ops/context/SiteSelectionContext';
 import { formatAmount } from '@/field-ops/lib/currency';
+import { formatDateTime } from '@/field-ops/lib/dateFormat';
 import { colors, spacing, radius, scrollConfig } from '@/field-ops/theme/tokens';
 import { getRoleLabelKey } from '@/field-ops/lib/rbac';
 import type { Task, AssignedTrip, UserRole, Trip } from '@/field-ops/types';
@@ -110,9 +112,20 @@ export function AssistantSupervisorDashboard({ onNavigateTab }: DashboardNavProp
         .sort((a, b) => a.name.localeCompare(b.name)),
     [sites, siteIds, user?.id]
   );
-  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
+  const [selectedSiteId, setSelectedSiteIdLocal] = useState<string | null>(null);
+  const { setSelectedSiteId: setGlobalSelectedSiteId } = useSiteSelection();
+  const setSelectedSiteId = useCallback(
+    (id: string | null) => {
+      setSelectedSiteIdLocal(id);
+      setGlobalSelectedSiteId(id);
+    },
+    [setGlobalSelectedSiteId]
+  );
   const assignedSite =
     mySites.find((s) => s.id === selectedSiteId) ?? mySites[0] ?? sites[0] ?? null;
+  useEffect(() => {
+    if (assignedSite?.id) setGlobalSelectedSiteId(assignedSite.id);
+  }, [assignedSite?.id, setGlobalSelectedSiteId]);
   const mySiteIds = useMemo(
     () => (assignedSite ? [assignedSite.id] : siteIds.length > 0 ? siteIds : sites.map((s) => s.id)),
     [assignedSite, siteIds, sites]
@@ -640,31 +653,13 @@ export function AssistantSupervisorDashboard({ onNavigateTab }: DashboardNavProp
                             </View>
                           </View>
                           {isNeedApproval && (
-                            <>
-                              <TouchableOpacity
-                                onPress={() => openAssignedDetail(a)}
-                                style={[styles.confirmBtn, { backgroundColor: colors.textSecondary, marginRight: 8 }]}
-                              >
-                                <FileText size={16} color="#fff" style={{ marginRight: 6 }} />
-                                <Text style={styles.confirmBtnText}>{t('assigned_trip_view_details')}</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                onPress={async () => {
-                                  const next = getCompletedStatus(a.status);
-                                  if (next) {
-                                    try {
-                                      await updateAssignedTripStatus(a.id, next);
-                                      showToast(t('assigned_trip_confirmed'));
-                                    } catch (e) {
-                                      Alert.alert(t('alert_error'), (e as Error).message);
-                                    }
-                                  }
-                                }}
-                                style={styles.confirmBtn}
-                              >
-                                <Text style={styles.confirmBtnText}>{t('assigned_trip_confirm')}</Text>
-                              </TouchableOpacity>
-                            </>
+                            <TouchableOpacity
+                              onPress={() => openAssignedDetail(a)}
+                              style={[styles.confirmBtn, { backgroundColor: colors.primary }]}
+                            >
+                              <FileText size={16} color="#fff" style={{ marginRight: 6 }} />
+                              <Text style={styles.confirmBtnText}>{t('assigned_trip_review_approve')}</Text>
+                            </TouchableOpacity>
                           )}
                         </View>
                       </Card>
@@ -716,31 +711,13 @@ export function AssistantSupervisorDashboard({ onNavigateTab }: DashboardNavProp
                             </View>
                           </View>
                           {isNeedApproval && (
-                            <>
-                              <TouchableOpacity
-                                onPress={() => openAssignedDetail(a)}
-                                style={[styles.confirmBtn, { backgroundColor: colors.textSecondary, marginRight: 8 }]}
-                              >
-                                <FileText size={16} color="#fff" style={{ marginRight: 6 }} />
-                                <Text style={styles.confirmBtnText}>{t('assigned_trip_view_details')}</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                onPress={async () => {
-                                  const next = getCompletedStatus(a.status);
-                                  if (next) {
-                                    try {
-                                      await updateAssignedTripStatus(a.id, next);
-                                      showToast(t('assigned_trip_confirmed'));
-                                    } catch (e) {
-                                      Alert.alert(t('alert_error'), (e as Error).message);
-                                    }
-                                  }
-                                }}
-                                style={styles.confirmBtn}
-                              >
-                                <Text style={styles.confirmBtnText}>{t('assigned_trip_confirm')}</Text>
-                              </TouchableOpacity>
-                            </>
+                            <TouchableOpacity
+                              onPress={() => openAssignedDetail(a)}
+                              style={[styles.confirmBtn, { backgroundColor: colors.primary }]}
+                            >
+                              <FileText size={16} color="#fff" style={{ marginRight: 6 }} />
+                              <Text style={styles.confirmBtnText}>{t('assigned_trip_review_approve')}</Text>
+                            </TouchableOpacity>
                           )}
                         </View>
                       </Card>
@@ -839,13 +816,14 @@ export function AssistantSupervisorDashboard({ onNavigateTab }: DashboardNavProp
                 <View style={styles.tripMetricCard}>
                   <Text style={styles.modalHint}>{t('trip_detail_start_time')}</Text>
                   <Text style={styles.tripMetricValue}>
-                    {selectedDetailContext.startedAt ? new Date(selectedDetailContext.startedAt).toLocaleString() : '—'}
+                    {selectedDetailContext.startedAt ? formatDateTime(selectedDetailContext.startedAt) : '—'}
                   </Text>
+                  <Text style={[styles.modalHint, { marginTop: 4 }]}>{t('time_zone_note')}</Text>
                 </View>
                 <View style={styles.tripMetricCard}>
                   <Text style={styles.modalHint}>{t('trip_detail_end_time')}</Text>
                   <Text style={styles.tripMetricValue}>
-                    {selectedDetailContext.endedAt ? new Date(selectedDetailContext.endedAt).toLocaleString() : '—'}
+                    {selectedDetailContext.endedAt ? formatDateTime(selectedDetailContext.endedAt) : '—'}
                   </Text>
                 </View>
                 <View style={styles.tripMetricCard}>
@@ -881,6 +859,7 @@ export function AssistantSupervisorDashboard({ onNavigateTab }: DashboardNavProp
                 {selectedDetailContext.isTruck && (
                   <View style={styles.tripMetricCard}>
                     <Text style={styles.modalHint}>{t('trip_approval_photos')}</Text>
+                    <Text style={[styles.modalHint, { marginBottom: 8 }]}>{t('trip_detail_photo_retention')}</Text>
                     <View style={styles.photoGrid}>
                       <View style={styles.photoCell}>
                         <Text style={styles.photoLabel}>{t('trip_approval_start_photo')}</Text>

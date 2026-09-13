@@ -1044,4 +1044,27 @@ export const rn: Record<EnKeys, string> = {
   site_card_spent: 'Byakoreshejwe',
 
   login_company_name: 'Hapyjo Ltd',
+
+  // ---- UX pass (2026-09-13) ----
+  error_friendly_permission: 'Ntabwo ufite uburenganzira bwo gukora ibi. Niba ubona ari ikosa, baza umuyobozi wawe.',
+  error_friendly_network: 'Nta murongo wa interineti. Reba interineti yawe hanyuma wongere ugerageze.',
+  error_friendly_session: 'Igihe cyawe cyo kwinjira cyarangiye. Ongera winjire.',
+  error_friendly_duplicate: 'Iyi nyandiko isanzwe ihari.',
+  error_friendly_invalid: 'Bimwe mu byanditswe ntibyemewe. Reba ifishi hanyuma wongere ugerageze.',
+  error_friendly_server: 'Habaye ikibazo kuri seriveri. Ongera ugerageze mu kanya.',
+  notifications_mark_all_read: 'Shyira byose nk\'ibyasomwe',
+  notifications_all_read: 'Ubutumwa bwose bwashyizwe nk\'ubwasomwe',
+  notifications_today: 'Uyu munsi',
+  notifications_yesterday: 'Ejo hashize',
+  notifications_older_hint: 'Ubutumwa bushaje busibwa ubwabwo.',
+  assigned_trip_review_approve: 'Suzuma & wemeze',
+  assigned_trip_queued_same_vehicle: 'Banza urangize urugendo ruriho kuri iki kinyabiziga.',
+  assigned_task_queued_same_vehicle: 'Banza urangize akazi kariho kuri iyi mashini.',
+  trip_detail_photo_retention: 'Amafoto y\'urugendo abikwa iminsi 3 nyuma yo kwemezwa, hanyuma agasibwa ubwayo.',
+  time_zone_note: 'Amasaha yerekanwa mu isaha ya Kigali (GMT+2).',
+  sites_initial_budget_hint: 'Siga ubusa kugira ngo utangire kuri 0 hanyuma ugabanye ingengo y\'imari nyuma.',
+  dashboard_fleet_approved_counts: 'Ingendo zemejwe {trips} · Imirimo yemejwe {tasks}',
+  offline_photo_retry: 'Nta murongo wa interineti, ifoto ntiyoherejwe. Komeza iyi fishi ifunguye hanyuma wongere ugerageze interineti igarutse.',
+  offline_saved_will_sync: 'Nta murongo wa interineti. Ibi byabitswe kuri iyi telefoni kandi bizoherezwa ubwabyo interineti igarutse.',
+  sidebar_signed_in_as: 'Winjiye nka',
 };

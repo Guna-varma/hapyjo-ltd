@@ -14,6 +14,7 @@ import { useResponsiveTheme } from '@/field-ops/theme/responsive';
 import { generateId } from '@/field-ops/lib/id';
 import { Play, Square, Fuel, MapPin, Camera, Pause, PlayCircle, CheckCircle } from 'lucide-react';
 import { getNextDriverStatus, getEffectiveDurationHours, canEndTrip, ASSIGNED_TRIP_STATUS_LABELS, ASSIGNED_TRIP_STATUS_COLORS } from '@/field-ops/lib/tripLifecycle';
+import { formatDateTime, formatTime } from '@/field-ops/lib/dateFormat';
 import { categorizeError, ERROR_CATEGORY_TITLE_KEYS } from '@/field-ops/lib/errorCategories';
 import { TripPhotoCaptureModal } from '@/field-ops/components/trips/TripPhotoCaptureModal';
 import { canSubmitTripEndAction } from '@/field-ops/lib/tripEndActionGuard';
@@ -870,13 +871,30 @@ export function DriverTripsScreen() {
   const myAssignedTasks = !isSupervisorView && userId
     ? assignedTrips.filter((a) => a.driverId === userId && a.vehicleType === 'machine' && machineActionableStatuses.includes(a.status))
     : [];
-  /** When there's an active trip, hide its assignment from the list so we only show the "Trip in progress" card (single place). */
-  const displayedAssignedTrips = activeTrip
-    ? myAssignedTrips.filter((a) => a.vehicleId !== activeTrip.vehicleId)
+  const runningTruckStatuses = ['TRIP_STARTED', 'TRIP_PAUSED', 'TRIP_RESUMED', 'TRIP_IN_PROGRESS'];
+  const runningMachineStatuses = ['TASK_STARTED', 'TASK_PAUSED', 'TASK_RESUMED', 'TASK_IN_PROGRESS'];
+  /**
+   * The assignment the running trip / session belongs to. Matched by id first;
+   * an older trip row without the link falls back to the running assignment on
+   * the same vehicle. Only this one is folded into the "Trip in progress" card —
+   * any other assignment on the same vehicle stays visible below as queued.
+   */
+  const activeAssignment = activeTrip
+    ? (activeTrip.assignedTripId ? myAssignedTrips.find((a) => a.id === activeTrip.assignedTripId) : undefined)
+      ?? myAssignedTrips.find((a) => a.vehicleId === activeTrip.vehicleId && runningTruckStatuses.includes(a.status))
+    : undefined;
+  const activeSessionAssignment = activeSession
+    ? (activeSession.assignedTripId ? myAssignedTasks.find((a) => a.id === activeSession.assignedTripId) : undefined)
+      ?? myAssignedTasks.find((a) => a.vehicleId === activeSession.vehicleId && runningMachineStatuses.includes(a.status))
+    : undefined;
+  const displayedAssignedTrips = activeAssignment
+    ? myAssignedTrips.filter((a) => a.id !== activeAssignment.id)
     : myAssignedTrips;
-  const displayedAssignedTasks = activeSession
-    ? myAssignedTasks.filter((a) => a.vehicleId !== activeSession.vehicleId)
+  const displayedAssignedTasks = activeSessionAssignment
+    ? myAssignedTasks.filter((a) => a.id !== activeSessionAssignment.id)
     : myAssignedTasks;
+  /** Vehicle that is busy right now: further assignments on it wait for the current one to finish. */
+  const busyVehicleId = activeTrip?.vehicleId ?? activeSession?.vehicleId ?? null;
   /** Show standalone "Start trip" only when no active trip and no assignable/running assigned trip (single start entry point). */
   const hasAssignableTrip = myAssignedTrips.some((a) => a.status === 'TRIP_ASSIGNED' || a.status === 'TRIP_PENDING');
   const hasRunningAssignedTrip = myAssignedTrips.some((a) =>
@@ -960,7 +978,7 @@ export function DriverTripsScreen() {
                     </View>
                     <Text className="text-sm text-gray-600">{getVehicleLabel(trip.vehicleId)} · {getSiteName(trip.siteId)}</Text>
                     {(trip.currentLat != null && trip.currentLon != null) ? (
-                      <Text className="text-xs text-gray-500 mt-1">{t('driver_position')}: {trip.currentLat.toFixed(5)}, {trip.currentLon.toFixed(5)}{trip.locationUpdatedAt ? ` · ${t('driver_updated')} ${new Date(trip.locationUpdatedAt).toLocaleTimeString()}` : ''}</Text>
+                      <Text className="text-xs text-gray-500 mt-1">{t('driver_position')}: {trip.currentLat.toFixed(5)}, {trip.currentLon.toFixed(5)}{trip.locationUpdatedAt ? ` · ${t('driver_updated')} ${formatTime(trip.locationUpdatedAt)}` : ''}</Text>
                     ) : (
                       <Text className="text-xs text-amber-600 mt-1">{t('driver_waiting_position')}</Text>
                     )}
@@ -979,7 +997,7 @@ export function DriverTripsScreen() {
                         <MapPin size={16} color="#2563eb" />
                         <Text className="font-semibold text-gray-900 ml-2">{d.name}</Text>
                       </View>
-                      <Text className="text-xs text-gray-500">{t('driver_position')}: {d.lastLat!.toFixed(5)}, {d.lastLon!.toFixed(5)}{d.locationUpdatedAt ? ` · ${t('driver_updated')} ${new Date(d.locationUpdatedAt).toLocaleString()}` : ''}</Text>
+                      <Text className="text-xs text-gray-500">{t('driver_position')}: {d.lastLat!.toFixed(5)}, {d.lastLon!.toFixed(5)}{d.locationUpdatedAt ? ` · ${t('driver_updated')} ${formatDateTime(d.locationUpdatedAt)}` : ''}</Text>
                     </Card>
                   ))}
               </View>
@@ -1016,8 +1034,13 @@ export function DriverTripsScreen() {
               const canComplete = a.status === 'TRIP_STARTED' || a.status === 'TRIP_IN_PROGRESS' || a.status === 'TRIP_RESUMED' || a.status === 'TASK_STARTED' || a.status === 'TASK_IN_PROGRESS' || a.status === 'TASK_RESUMED';
               const isRunning = canPause || canComplete;
               const isNeedApproval = a.status === 'TRIP_NEED_APPROVAL' || a.status === 'TASK_NEED_APPROVAL';
+              const isQueuedBehindActive = busyVehicleId != null && a.vehicleId === busyVehicleId;
               return (
-                <Card key={a.id} className="mb-2 border-l-4 border-l-blue-400">
+                <Card
+                  key={a.id}
+                  className={isQueuedBehindActive ? 'mb-2 border-l-4 border-l-gray-300' : 'mb-2 border-l-4 border-l-blue-400'}
+                  style={isQueuedBehindActive ? { opacity: 0.6 } : undefined}
+                >
                   <View className="flex-row justify-between items-start mb-2">
                     <View>
                       <Text className="font-semibold text-gray-900">{vehicleLabel}</Text>
@@ -1030,7 +1053,12 @@ export function DriverTripsScreen() {
                   {isRunning && (
                     <Text className="text-sm text-slate-600 mb-2">{t('driver_elapsed')}: {formatElapsed(getAssignedTripElapsedSeconds(a))}</Text>
                   )}
-                  {!isNeedApproval && (canStart || canPause || canResume || canComplete) && nextStatus && (
+                  {isQueuedBehindActive && (
+                    <Text className="text-sm text-gray-600 mb-1">
+                      {isTruck ? t('assigned_trip_queued_same_vehicle') : t('assigned_task_queued_same_vehicle')}
+                    </Text>
+                  )}
+                  {!isQueuedBehindActive && !isNeedApproval && (canStart || canPause || canResume || canComplete) && nextStatus && (
                     <View className="flex-row flex-wrap gap-2">
                       {canStart && (
                         <TouchableOpacity
@@ -1136,7 +1164,7 @@ export function DriverTripsScreen() {
                   <TouchableOpacity
                     onPress={async () => {
                       const inProgressStatuses = ['TRIP_IN_PROGRESS', 'TRIP_STARTED', 'TRIP_RESUMED'];
-                      const matching = activeTrip ? assignedTrips.find((a) => a.driverId === userId && a.vehicleId === activeTrip.vehicleId && inProgressStatuses.includes(a.status)) : null;
+                      const matching = activeAssignment && inProgressStatuses.includes(activeAssignment.status) ? activeAssignment : null;
                       if (matching) {
                         try {
                           await withLoading(() => updateAssignedTripStatus(matching.id, 'TRIP_PAUSED'));
@@ -1157,7 +1185,7 @@ export function DriverTripsScreen() {
                   >
                     <Fuel size={18} color="#fff" />
                     <Text className="text-white font-semibold ml-2">
-                      {activeTrip && assignedTrips.some((a) => a.driverId === userId && a.vehicleId === activeTrip.vehicleId && ['TRIP_IN_PROGRESS', 'TRIP_STARTED', 'TRIP_RESUMED'].includes(a.status)) ? t('driver_pause_and_refuel') : t('driver_mid_shift_refuel')}
+                      {activeAssignment && ['TRIP_IN_PROGRESS', 'TRIP_STARTED', 'TRIP_RESUMED'].includes(activeAssignment.status) ? t('driver_pause_and_refuel') : t('driver_mid_shift_refuel')}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -1231,7 +1259,7 @@ export function DriverTripsScreen() {
                     <View className="flex-row justify-between">
                       <View>
                         <Text className="font-medium text-gray-900">{getVehicleLabel(a.vehicleId)}</Text>
-                        <Text className="text-xs text-gray-500">{(a.completedAt ?? a.endedAt ?? a.createdAt).slice(0, 16)} · {ASSIGNED_TRIP_STATUS_LABELS['TRIP_COMPLETED']}</Text>
+                        <Text className="text-xs text-gray-500">{formatDateTime(a.completedAt ?? a.endedAt ?? a.createdAt)} · {ASSIGNED_TRIP_STATUS_LABELS['TRIP_COMPLETED']}</Text>
                         {durationHours > 0 && (
                           <Text className="text-xs text-gray-500 mt-1">{t('driver_duration')}: {durationHours.toFixed(1)} h{kmPerHour > 0 ? ` · ${kmPerHour.toFixed(0)} km/h` : ''}</Text>
                         )}
@@ -1332,7 +1360,7 @@ export function DriverTripsScreen() {
                 <View className="flex-row justify-between">
                   <View>
                     <Text className="font-medium text-gray-900">{getVehicleLabel(m.vehicleId)}</Text>
-                    <Text className="text-xs text-gray-500">{m.startTime.slice(0, 16)} · {m.status}</Text>
+                    <Text className="text-xs text-gray-500">{formatDateTime(m.startTime)} · {m.status}</Text>
                   </View>
                   <Text className="font-semibold">{(m.durationHours ?? 0).toFixed(1)} h · {(m.fuelConsumed ?? 0).toFixed(1)} L</Text>
                 </View>

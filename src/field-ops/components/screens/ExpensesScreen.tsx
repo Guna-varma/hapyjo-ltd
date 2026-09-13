@@ -14,6 +14,7 @@ import {
 } from '@/field-ops/components/ui';
 import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
+import { useSiteSelection } from '@/field-ops/context/SiteSelectionContext';
 import { useToast } from '@/field-ops/context/ToastContext';
 import { generateId } from '@/field-ops/lib/id';
 import { formatAmount, formatPerUnit } from '@/field-ops/lib/currency';
@@ -38,6 +39,7 @@ const GENERAL_EXPENSE_CATEGORIES: ExpenseCategory[] = [
 export function ExpensesScreen() {
   const PAGE_SIZE = 10;
   const { t } = useLocale();
+  const { selectedSiteId: dashboardSiteId } = useSiteSelection();
   const { sites, vehicles, expenses, addExpense, deleteExpense, refetch } = useMockAppStore();
   const { showToast } = useToast();
   const [generalModalVisible, setGeneralModalVisible] = useState(false);
@@ -56,9 +58,16 @@ export function ExpensesScreen() {
   const [vehicleId, setVehicleId] = useState('');
   const [litres, setLitres] = useState('');
   const [costPerLitre, setCostPerLitre] = useState('');
-  const [filterSiteId, setFilterSiteId] = useState<string>('');
+  const [filterSiteId, setFilterSiteId] = useState<string>(() => dashboardSiteId ?? '');
   const [expenseTypeFilter, setExpenseTypeFilter] = useState<'all' | 'general' | 'fuel'>('all');
   const [currentPage, setCurrentPage] = useState(1);
+
+  React.useEffect(() => {
+    if (dashboardSiteId) {
+      setFilterSiteId(dashboardSiteId);
+      setCurrentPage(1);
+    }
+  }, [dashboardSiteId]);
 
   const siteVehicles = vehicles.filter((v) => v.siteId === fuelSiteId);
   const fuelCost = (parseFloat(litres) || 0) * (parseFloat(costPerLitre) || 0);

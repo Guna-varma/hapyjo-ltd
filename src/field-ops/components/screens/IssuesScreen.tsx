@@ -1,4 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
+import { isNetworkError } from '@/field-ops/lib/safeDbWrite';
+import { formatDateTime } from '@/field-ops/lib/dateFormat';
 import { ActivityIndicator, Alert, Image, Keyboard, Linking, Modal, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from '@/field-ops/components/primitives';
 import {
   Header,
@@ -17,6 +19,7 @@ import { modalStyles } from '@/field-ops/components/ui/modalStyles';
 import { useAuth } from '@/field-ops/context/AuthContext';
 import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
+import { useSiteSelection } from '@/field-ops/context/SiteSelectionContext';
 import { useToast } from '@/field-ops/context/ToastContext';
 import { useResponsiveTheme } from '@/field-ops/theme/responsive';
 import { generateId } from '@/field-ops/lib/id';
@@ -83,6 +86,7 @@ export function IssuesScreen() {
   const { user } = useAuth();
   const { t } = useLocale();
   const theme = useResponsiveTheme();
+  const { selectedSiteId: dashboardSiteId } = useSiteSelection();
   const { sites, issues, users, addIssue, updateIssue, refetch, loading } = useMockAppStore();
   const { showToast } = useToast();
   const [refreshing, setRefreshing] = useState(false);
@@ -99,17 +103,20 @@ export function IssuesScreen() {
 
   const getCreatorName = (userId: string) => users.find((u) => u.id === userId)?.name ?? userId.slice(0, 8) + '…';
   const getCreatorRoleLabel = (role?: string) => (role ? t(`role_${role}` as Parameters<typeof t>[0]) : '—');
-  const formatIssueDateTime = (iso: string) =>
-    new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  const formatIssueDateTime = (iso: string) => formatDateTime(iso);
 
   const [raiseModalVisible, setRaiseModalVisible] = useState(false);
   const [submittingIssue, setSubmittingIssue] = useState(false);
   const [siteId, setSiteId] = useState(sites[0]?.id ?? '');
   const [description, setDescription] = useState('');
-  const [filterSiteId, setFilterSiteId] = useState<string>(ALL_SITES_VALUE);
+  const [filterSiteId, setFilterSiteId] = useState<string>(() => dashboardSiteId ?? ALL_SITES_VALUE);
   const [imageUris, setImageUris] = useState<string[]>([]);
   const [viewingImageUri, setViewingImageUri] = useState<string | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<import('@/field-ops/types').Issue | null>(null);
+
+  React.useEffect(() => {
+    if (dashboardSiteId) setFilterSiteId(dashboardSiteId);
+  }, [dashboardSiteId]);
 
   const siteFilterOptions = useMemo(
     () => [
@@ -303,8 +310,12 @@ export function IssuesScreen() {
       setImageUris([]);
       showToast(t('issues_raise_success_message'));
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('alert_error');
-      showToast(message);
+      // The form stays open with everything typed and attached: nothing is lost.
+      if (isNetworkError(err)) {
+        Alert.alert(t('error_title_network'), imageUris.length > 0 ? t('offline_photo_retry') : t('error_friendly_network'));
+      } else {
+        Alert.alert(t('alert_error'), err instanceof Error ? err.message : t('error_friendly_server'));
+      }
     } finally {
       setSubmittingIssue(false);
     }

@@ -28,6 +28,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { StyleSheet, toCss, type RNStyle } from './style';
+import { humanizeAlert } from '@/field-ops/lib/friendlyError';
 
 export { StyleSheet, toCss };
 export type { RNStyle };
@@ -348,7 +349,9 @@ export const TouchableOpacity = forwardRef<HTMLDivElement, TouchableProps>(
       onPress,
       onLongPress,
       disabled,
-      activeOpacity = 0.2,
+      // RN's default (0.2) is tuned for touch; with a mouse click it reads as the
+      // control blinking out, so the web keeps a gentler pressed state.
+      activeOpacity = 0.6,
       testID,
       accessibilityLabel,
       delayLongPress = 500,
@@ -427,8 +430,12 @@ export function TouchableWithoutFeedback({
   disabled?: boolean;
   style?: RNStyle;
 }) {
+  // RN renders no box of its own here, so the child (typically a modal overlay
+  // with flex: 1) fills the parent. The web wrapper must therefore stretch too;
+  // otherwise the overlay only covered its content and the bottom of the screen
+  // (tab bar, page) showed undimmed below a bottom sheet.
   return (
-    <TouchableOpacity onPress={onPress} disabled={disabled} activeOpacity={1} style={{ flexDirection: 'column' }}>
+    <TouchableOpacity onPress={onPress} disabled={disabled} activeOpacity={1} style={{ flexDirection: 'column', flex: 1, minHeight: 0 }}>
       {children}
     </TouchableOpacity>
   );
@@ -1045,8 +1052,55 @@ export function Modal({ visible, transparent, animationType = 'fade', onRequestC
   useEffect(() => {
     if (!visible) return;
     onShow?.();
+    const root = portalRef.current;
+    /**
+     * Dialog focus behaviour: focus moves into the modal on open, Tab cycles
+     * within it (never into the dimmed page behind), and focus returns to the
+     * opener on close. The container itself takes focus rather than the first
+     * field, so a phone does not pop its keyboard the moment a sheet opens.
+     */
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    // A screen that autoFocuses a field inside the sheet keeps that focus.
+    if (root && !(previouslyFocused && root.contains(previouslyFocused))) {
+      root.focus({ preventScroll: true });
+    }
+    const focusables = (): HTMLElement[] =>
+      root
+        ? Array.from(
+            root.querySelectorAll<HTMLElement>(
+              'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            ),
+          ).filter((el) => el.getClientRects().length > 0)
+        : [];
+    const isTopmostLayer = (): boolean => {
+      // Another modal or an alert opened on top of this one owns the keyboard.
+      const layers = Array.from(document.body.querySelectorAll<HTMLElement>('.fo-modal, [role="alertdialog"]'));
+      return layers.length === 0 || layers[layers.length - 1] === root;
+    };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onRequestClose?.();
+      if (!isTopmostLayer()) return;
+      if (e.key === 'Escape') {
+        onRequestClose?.();
+        return;
+      }
+      if (e.key === 'Tab' && root) {
+        const items = focusables();
+        if (items.length === 0) {
+          e.preventDefault();
+          return;
+        }
+        const first = items[0];
+        const last = items[items.length - 1];
+        const active = document.activeElement as HTMLElement | null;
+        const inside = active != null && root.contains(active);
+        if (e.shiftKey && (!inside || active === first || active === root)) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && (!inside || active === last)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener('keydown', onKey);
     const previousOverflow = document.body.style.overflow;
@@ -1054,6 +1108,9 @@ export function Modal({ visible, transparent, animationType = 'fade', onRequestC
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = previousOverflow;
+      if (previouslyFocused && document.contains(previouslyFocused)) {
+        previouslyFocused.focus?.({ preventScroll: true });
+      }
     };
     // onShow/onRequestClose are read fresh each open; only `visible` should retrigger.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1061,8 +1118,16 @@ export function Modal({ visible, transparent, animationType = 'fade', onRequestC
 
   if (!visible || typeof document === 'undefined') return null;
 
-  const animation =
-    animationType === 'slide'
+  /**
+   * Transparent modals (sheets over the page) are not faded in as a whole: a
+   * fading layer shows the page through the sheet for its first frames, which
+   * reads as a broken half-transparent dialog. Their overlay appears at once
+   * and only the tagged sheet moves (see field-ops.css, [data-anim]). Full-page
+   * modals are opaque, so a plain fade is fine for them.
+   */
+  const animation = transparent
+    ? undefined
+    : animationType === 'slide'
       ? 'fo-modal-slide 0.22s ease-out'
       : animationType === 'none'
         ? undefined
@@ -1071,8 +1136,13 @@ export function Modal({ visible, transparent, animationType = 'fade', onRequestC
   return createPortal(
     <div
       ref={portalRef}
+      role="dialog"
+      aria-modal="true"
+      tabIndex={-1}
+      data-anim={transparent ? animationType : undefined}
       className={transparent ? 'fo-app fo-modal fo-modal-transparent' : 'fo-app fo-modal'}
       style={{
+        outline: 'none',
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
@@ -1562,10 +1632,13 @@ const pendingAlerts: AlertRequest[] = [];
  */
 export const Alert = {
   alert(title: string, message?: string, buttons?: AlertButton[]) {
+    // Raw database / network wording becomes a plain-language message here, so
+    // no call site can leak "violates row-level security policy" to a driver.
+    const friendly = humanizeAlert(title, message);
     const req: AlertRequest = {
       id: ++alertSeq,
-      title,
-      message,
+      title: friendly.title,
+      message: friendly.message,
       buttons: buttons && buttons.length > 0 ? buttons : [{ text: 'OK' }],
     };
     if (alertListener) alertListener(req);

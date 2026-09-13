@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { createT, type Locale } from '@/field-ops/lib/i18n';
+import { setFriendlyErrorLocale } from '@/field-ops/lib/friendlyError';
 
 const LOCALE_STORAGE_KEY = '@hapyjo_locale';
 
@@ -49,6 +50,10 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const t = useMemo(() => createT(locale), [locale]);
+  // Alert dialogs translate raw errors outside React; keep them in the same language.
+  useEffect(() => {
+    setFriendlyErrorLocale(locale);
+  }, [locale]);
   const value = useMemo(
     () => ({ locale, setLocale, t }),
     [locale, setLocale, t]

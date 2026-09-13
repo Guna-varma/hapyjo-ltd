@@ -1042,6 +1042,29 @@ export const en = {
   site_card_spent: 'Spent',
 
   login_company_name: 'Hapyjo Ltd',
+
+  // ---- UX pass (2026-09-13) ----
+  error_friendly_permission: "You don't have permission to do this. If you think this is a mistake, ask your supervisor or administrator.",
+  error_friendly_network: 'No connection. Check your internet and try again.',
+  error_friendly_session: 'Your session has expired. Please sign in again.',
+  error_friendly_duplicate: 'This record already exists.',
+  error_friendly_invalid: 'Some of the entered details are not valid. Check the form and try again.',
+  error_friendly_server: 'Something went wrong on the server. Please try again in a moment.',
+  notifications_mark_all_read: 'Mark all as read',
+  notifications_all_read: 'All notifications marked as read',
+  notifications_today: 'Today',
+  notifications_yesterday: 'Yesterday',
+  notifications_older_hint: 'Older notifications are removed automatically.',
+  assigned_trip_review_approve: 'Review & approve',
+  assigned_trip_queued_same_vehicle: 'Finish the current trip on this vehicle first.',
+  assigned_task_queued_same_vehicle: 'Finish the current task on this machine first.',
+  trip_detail_photo_retention: 'Trip photos are kept for 3 days after approval, then removed automatically.',
+  time_zone_note: 'Times shown in Kigali time (GMT+2).',
+  sites_initial_budget_hint: 'Leave empty to start at 0 and allocate budget later.',
+  dashboard_fleet_approved_counts: '{trips} approved trips · {tasks} approved tasks',
+  offline_photo_retry: "You're offline, so the photo could not be uploaded. Keep this form open and try again once you're connected.",
+  offline_saved_will_sync: "You're offline. This has been saved on this device and will be sent automatically when you're back online.",
+  sidebar_signed_in_as: 'Signed in as',
 } as const;
 
 export type EnKeys = keyof typeof en;

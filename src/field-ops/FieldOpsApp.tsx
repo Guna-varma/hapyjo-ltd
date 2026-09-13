@@ -17,6 +17,7 @@ import { MockAppStoreProvider } from '@/field-ops/context/MockAppStoreContext';
 import { ToastProvider } from '@/field-ops/context/ToastContext';
 import { NotificationNavigationProvider } from '@/field-ops/context/NotificationNavigationContext';
 import { LocaleProvider, useLocale } from '@/field-ops/context/LocaleContext';
+import { SiteSelectionProvider } from '@/field-ops/context/SiteSelectionContext';
 import { LoginScreen } from '@/field-ops/components/auth/LoginScreen';
 import { AppNavigation } from '@/field-ops/components/navigation/AppNavigation';
 import { PushTokenRegistration } from '@/field-ops/components/PushTokenRegistration';
@@ -159,6 +160,7 @@ export default function FieldOpsApp() {
       <AuthProvider>
         <LocaleProvider>
           <MockAppStoreProvider>
+            <SiteSelectionProvider>
             <ToastProvider>
               <LoadingProvider>
                 <RequestLocationPermissionOnAppOpen />
@@ -169,6 +171,7 @@ export default function FieldOpsApp() {
                 </View>
               </LoadingProvider>
             </ToastProvider>
+            </SiteSelectionProvider>
           </MockAppStoreProvider>
         </LocaleProvider>
       </AuthProvider>

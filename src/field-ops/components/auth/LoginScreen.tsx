@@ -29,6 +29,12 @@ export function LoginScreen() {
 
   const { t } = useLocale();
   const theme = useResponsiveTheme();
+  /**
+   * Phones keep the sticky bottom bar (thumb reach, keyboard-safe). On a desktop
+   * window a bar pinned to the bottom of a tall screen sits far from the form, so
+   * the button lives inside the card instead.
+   */
+  const buttonInCard = theme.isDesktop;
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -46,6 +52,12 @@ export function LoginScreen() {
       setLoading(false);
     }
   };
+
+  const signInButton = (
+    <Button onPress={handleLogin} loading={loading} className="w-full" style={{ minHeight: 48 }}>
+      {t('login_title')}
+    </Button>
+  );
 
   return (
     <FormScreenLayout
@@ -89,11 +101,7 @@ export function LoginScreen() {
           <LanguageSwitcher />
         </View>
       }
-      footer={
-        <Button onPress={handleLogin} loading={loading} className="w-full" style={{ minHeight: 48 }}>
-          {t('login_title')}
-        </Button>
-      }
+      footer={buttonInCard ? null : signInButton}
       contentPadding={theme.screenPadding}
     >
       <View className="items-center mb-8">
@@ -127,12 +135,15 @@ export function LoginScreen() {
           onChangeText={setPassword}
           secureTextEntry={!showPassword}
           enterKeyHint="done"
+          onSubmitEditing={handleLogin}
           rightElement={
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
               {showPassword ? <EyeOff size={22} color="#6B7280" /> : <Eye size={22} color="#6B7280" />}
             </TouchableOpacity>
           }
         />
+
+        {buttonInCard ? <View className="mt-2">{signInButton}</View> : null}
 
         <View className="mt-6 p-4 bg-blue-50 rounded-lg">
           <Text className="text-xs font-semibold text-blue-900 mb-2">{t('login_internal_accounts')}</Text>

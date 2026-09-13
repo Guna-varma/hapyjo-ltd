@@ -61,7 +61,11 @@ const toastShadow = Platform.select({
 
 const styles = StyleSheet.create({
   toast: {
-    position: 'absolute',
+    // Fixed to the viewport and above every modal (modals portal at z-index 1000,
+    // alerts at 2000), so a "Saved" toast is never hidden behind the dialog that
+    // triggered it or scrolled out of view.
+    position: 'fixed',
+    zIndex: 3000,
     left: spacing.md,
     right: spacing.md,
     // On wide viewports the toast stays a compact, centred pill instead of a

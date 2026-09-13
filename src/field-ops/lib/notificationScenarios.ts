@@ -16,6 +16,7 @@ export type NotificationScenarioId =
   | 'expense_added'
   | 'survey_submitted'
   | 'survey_approved'
+  | 'survey_rejected'
   | 'report_generated'
   | 'user_created'
   | 'password_reset'
@@ -127,15 +128,30 @@ const scenarios: Record<NotificationScenarioId, NotificationScenario> = {
     },
   },
 
+  // The surveyor who submitted it receives a personal row (target_user_id) from
+  // the store, so the role-wide fan-out here is management only.
   survey_approved: {
     id: 'survey_approved',
-    targetRoles: ['surveyor', 'owner', 'head_supervisor', 'accountant'],
+    targetRoles: ['owner', 'head_supervisor', 'accountant'],
     linkType: 'survey',
     linkIdKey: 'id',
     getTitle: () => 'Survey approved',
     getBody: (p) => {
-      const site = p.siteName ? `[${p.siteName}]` : 'Your survey';
-      return `${site} has been approved`;
+      const site = p.siteName ? `[${p.siteName}]` : 'Survey';
+      const volume = p.volumeM3 != null ? ` (${Number(p.volumeM3).toLocaleString()} m³)` : '';
+      return `${site}${volume} has been approved`;
+    },
+  },
+
+  survey_rejected: {
+    id: 'survey_rejected',
+    targetRoles: ['head_supervisor'],
+    linkType: 'survey',
+    linkIdKey: 'id',
+    getTitle: () => 'Survey needs revision',
+    getBody: (p) => {
+      const site = p.siteName ? `[${p.siteName}]` : 'Survey';
+      return `${site} was rejected by the assistant supervisor — revise and resubmit`;
     },
   },
 

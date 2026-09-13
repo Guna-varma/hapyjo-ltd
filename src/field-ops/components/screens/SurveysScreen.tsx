@@ -8,6 +8,7 @@ import { SkeletonList } from '@/field-ops/components/ui/SkeletonLoader';
 import { useAuth } from '@/field-ops/context/AuthContext';
 import { useLocale } from '@/field-ops/context/LocaleContext';
 import { useMockAppStore } from '@/field-ops/context/MockAppStoreContext';
+import { useSiteSelection } from '@/field-ops/context/SiteSelectionContext';
 import { useToast } from '@/field-ops/context/ToastContext';
 import { useResponsiveTheme } from '@/field-ops/theme/responsive';
 import { parseSurveyFileContent, computeWorkVolume, computeCubature, parseAndMergeSurveyFiles } from '@/field-ops/lib/surveyParser';
@@ -19,10 +20,13 @@ import { ModalWithKeyboard } from '@/field-ops/components/ui/ModalWithKeyboard';
 import { Button } from '@/field-ops/components/ui/Button';
 import { PressableScale } from '@/field-ops/components/ui/PressableScale';
 import { modalStyles } from '@/field-ops/components/ui/modalStyles';
+import { FilterChips } from '@/field-ops/components/ui/FilterChips';
 import { colors, radius, scrollConfig } from '@/field-ops/theme/tokens';
 
 type TopFileEntry = { id: string; name: string; content: string };
 type DepthFile = { name: string; content: string } | null;
+
+const ALL_SITES_VALUE = '';
 
 export interface SurveysScreenProps {
   initialOpenNewSurveyModal?: boolean;
@@ -38,6 +42,7 @@ export function SurveysScreen({ initialOpenNewSurveyModal, onClearOpenNewSurveyM
   const { user } = useAuth();
   const { t } = useLocale();
   const theme = useResponsiveTheme();
+  const { selectedSiteId: dashboardSiteId } = useSiteSelection();
   const { sites, surveys, siteAssignments, users, addSurvey, updateSurvey, refetch, loading } = useMockAppStore();
   const { showToast } = useToast();
   const [refreshing, setRefreshing] = useState(false);
@@ -48,12 +53,33 @@ export function SurveysScreen({ initialOpenNewSurveyModal, onClearOpenNewSurveyM
     [user?.id, siteAssignments],
   );
 
-  const mySurveys = surveys.filter((s) => s.surveyorId === user?.id);
+  const [listSiteFilter, setListSiteFilter] = useState<string>(() => dashboardSiteId ?? ALL_SITES_VALUE);
+  useEffect(() => {
+    if (dashboardSiteId) setListSiteFilter(dashboardSiteId);
+  }, [dashboardSiteId]);
+
+  const matchSite = useCallback(
+    (s: { siteId: string }) => (listSiteFilter === ALL_SITES_VALUE ? true : s.siteId === listSiteFilter),
+    [listSiteFilter]
+  );
+
+  const mySurveys = surveys.filter((s) => s.surveyorId === user?.id).filter(matchSite);
   const pendingSurveys = isAssistantSupervisor
-    ? surveys.filter((s) => s.status === 'approval_pending' && mySiteIds.includes(s.siteId))
+    ? surveys.filter((s) => s.status === 'approval_pending' && mySiteIds.includes(s.siteId)).filter(matchSite)
     : [];
-  const approvedSurveys = surveys.filter((s) => s.status === 'approved');
+  const approvedSurveys = surveys.filter((s) => s.status === 'approved').filter(matchSite);
   const getSiteName = useCallback((sid: string) => sites.find((s) => s.id === sid)?.name ?? sid, [sites]);
+
+  const siteFilterOptions = useMemo(
+    () => [
+      { value: ALL_SITES_VALUE, label: t('reports_all') },
+      ...(isAssistantSupervisor
+        ? sites.filter((s) => mySiteIds.includes(s.id))
+        : sites
+      ).map((s) => ({ value: s.id, label: s.name })),
+    ],
+    [sites, t, isAssistantSupervisor, mySiteIds]
+  );
 
   const today = new Date().toISOString().slice(0, 10);
   const [newModalVisible, setNewModalVisible] = useState(false);
@@ -414,6 +440,17 @@ export function SurveysScreen({ initialOpenNewSurveyModal, onClearOpenNewSurveyM
         nestedScrollEnabled
         {...scrollConfig}
       >
+        {(isAssistantSupervisor || sites.length > 1) && (
+          <View style={{ marginBottom: theme.spacingMd }}>
+            <Text style={{ fontSize: theme.fontSizeCaption, color: colors.textSecondary, marginBottom: 6 }}>{t('expenses_filter_by_site')}</Text>
+            <FilterChips
+              options={siteFilterOptions}
+              value={listSiteFilter}
+              onChange={setListSiteFilter}
+              scroll={siteFilterOptions.length > 3}
+            />
+          </View>
+        )}
         {loading ? (
           <SkeletonList count={5} />
         ) : (
@@ -676,12 +713,6 @@ export function SurveysScreen({ initialOpenNewSurveyModal, onClearOpenNewSurveyM
           <Text style={[modalStyles.label, { fontSize: 12, color: colors.gray500, marginTop: 0, marginBottom: 8 }]}>{t('surveys_depth_required')}</Text>
         )}
 
-        {parsedVolume === null && (
-          <TouchableOpacity onPress={runParse} disabled={computing} style={{ backgroundColor: computing ? colors.gray400 : colors.gray700, borderRadius: radius.md, paddingVertical: 12, marginBottom: 12, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
-            {computing ? <ActivityIndicator size="small" color="#fff" style={{ marginRight: 8 }} /> : null}
-            <Text style={{ color: '#fff', fontWeight: '600' }}>{computing ? t('surveys_computing') : t('surveys_parse_volume')}</Text>
-          </TouchableOpacity>
-        )}
         {(parsedVolume !== null || parsedCubature !== null) && (
           <View style={{ marginBottom: theme.spacingMd, padding: theme.spacingMd, backgroundColor: colors.blue50, borderRadius: radius.md }}>
             <Text style={[modalStyles.label, { marginBottom: theme.spacingXs, fontSize: theme.fontSizeCaption }]}>{t('surveys_result_preview')}</Text>

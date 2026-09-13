@@ -9,7 +9,7 @@ interface FormScreenLayoutProps {
   header: React.ReactNode;
   /** Form content – only this area scrolls. */
   children: React.ReactNode;
-  /** Sticky footer (e.g. primary Save/Submit button). */
+  /** Sticky footer (e.g. primary Save/Submit button). Pass null to omit the bar. */
   footer: React.ReactNode;
   /** Optional padding around scroll content. */
   contentPadding?: number;
@@ -72,17 +72,19 @@ export function FormScreenLayout({
         </ScrollView>
       </FormScrollProvider>
 
-      <View
-        style={[
-          styles.footer,
-          {
-            paddingBottom: Math.max(spacing.md, insets.bottom),
-            paddingTop: spacing.sm,
-          },
-        ]}
-      >
-        <View style={columnStyle}>{footer}</View>
-      </View>
+      {footer != null ? (
+        <View
+          style={[
+            styles.footer,
+            {
+              paddingBottom: Math.max(spacing.md, insets.bottom),
+              paddingTop: spacing.sm,
+            },
+          ]}
+        >
+          <View style={columnStyle}>{footer}</View>
+        </View>
+      ) : null}
     </KeyboardAvoidingView>
   );
 }

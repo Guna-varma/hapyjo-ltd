@@ -20,7 +20,7 @@ import { buildFinancialSummary } from '@/field-ops/lib/financeSummary';
 export function OwnerDashboard({ onNavigateTab }: DashboardNavProps) {
   const { t, locale, setLocale } = useLocale();
   const { user } = useAuth();
-  const { sites, surveys, expenses, trips, machineSessions, assignedTrips, updateSite } = useMockAppStore();
+  const { sites, surveys, expenses, assignedTrips, updateSite } = useMockAppStore();
   const ownerName = user?.name?.trim() || 'Owner';
   const [rateModalVisible, setRateModalVisible] = useState(false);
   const [rateSiteId, setRateSiteId] = useState<string | null>(null);
@@ -393,15 +393,13 @@ export function OwnerDashboard({ onNavigateTab }: DashboardNavProps) {
           </Card>
         )}
 
-        {/* Fleet & trips – approved by assistant supervisor */}
+        {/* Fleet & trips – metrics from AS-approved assigned trips only */}
         {(() => {
-          const approvedTrips = assignedTrips.filter((a) => a.status === 'TRIP_COMPLETED');
-          const approvedTasks = assignedTrips.filter((a) => a.status === 'TASK_COMPLETED');
-          const completedTripsInRange = trips.filter((tr) => tr.status === 'completed' && inRange(tr.endTime ?? tr.startTime));
-          const completedSessionsInRange = machineSessions.filter((m) => m.status === 'completed' && inRange(m.endTime ?? m.startTime));
-          const totalFuel = completedTripsInRange.reduce((s, tr) => s + (tr.fuelConsumed ?? 0), 0) + completedSessionsInRange.reduce((s, m) => s + (m.fuelConsumed ?? 0), 0);
-          const totalDistance = completedTripsInRange.reduce((s, tr) => s + (tr.distanceKm ?? 0), 0);
-          const totalHours = completedSessionsInRange.reduce((s, m) => s + (m.durationHours ?? 0), 0);
+          const approvedTrips = assignedTrips.filter((a) => a.status === 'TRIP_COMPLETED' && inRange(a.completedAt ?? a.endedAt ?? a.createdAt));
+          const approvedTasks = assignedTrips.filter((a) => a.status === 'TASK_COMPLETED' && inRange(a.completedAt ?? a.endedAt ?? a.createdAt));
+          const totalFuel = [...approvedTrips, ...approvedTasks].reduce((s, a) => s + (a.fuelUsedL ?? 0), 0);
+          const totalDistance = approvedTrips.reduce((s, a) => s + (a.distanceKm ?? 0), 0);
+          const totalHours = approvedTasks.reduce((s, a) => s + (a.hoursUsed ?? 0), 0);
           const hasFleet = approvedTrips.length > 0 || approvedTasks.length > 0;
           if (!hasFleet) return null;
           return (
@@ -415,6 +413,11 @@ export function OwnerDashboard({ onNavigateTab }: DashboardNavProps) {
                 <Text style={ownerStyles.contractValue}>{t('dashboard_fleet_total_distance')}: {totalDistance.toFixed(0)} km</Text>
                 <Text style={ownerStyles.contractValue}>{t('dashboard_fleet_total_hours')}: {totalHours.toFixed(1)} h</Text>
               </View>
+              <Text style={[ownerStyles.contractSiteName, { fontSize: 12, color: colors.textSecondary }]}>
+                {t('dashboard_fleet_approved_counts')
+                  .replace('{trips}', String(approvedTrips.length))
+                  .replace('{tasks}', String(approvedTasks.length))}
+              </Text>
               <Text style={[ownerStyles.contractSiteName, { fontSize: 12, color: colors.textSecondary }]}>{t('dashboard_fleet_approved_by_as')}</Text>
             </Card>
           );
@@ -920,10 +923,10 @@ const ownerStyles = StyleSheet.create({
   rateModalScroll: { flex: 1, paddingHorizontal: 24, paddingTop: 16 },
   rateModalScrollContent: { paddingBottom: 24 },
   rateStepLabel: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 10 },
-  rateSiteGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  rateSiteGrid: { flexDirection: 'column', gap: 8 },
   rateSiteCard: {
-    minWidth: '47%',
-    padding: 16,
+    width: '100%',
+    padding: 14,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: colors.border,

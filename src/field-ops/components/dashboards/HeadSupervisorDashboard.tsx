@@ -16,7 +16,7 @@ import { SiteTasksScreen } from '@/field-ops/components/screens/SiteTasksScreen'
 /** Head Supervisor allocates vehicles to sites (Vehicles tab). Driver/operator assignment is done by Assistant Supervisor only. */
 export function HeadSupervisorDashboard({ onNavigateTab }: DashboardNavProps = {}) {
   const { t } = useLocale();
-  const { sites, surveys, trips, machineSessions, assignedTrips } = useMockAppStore();
+  const { sites, surveys, assignedTrips } = useMockAppStore();
   const [tasksSiteId, setTasksSiteId] = useState<string | null>(null);
   const totalBudget = sites.reduce((sum, site) => sum + (site.budget ?? 0), 0);
   const totalSpent = sites.reduce((sum, site) => sum + (site.spent ?? 0), 0);
@@ -120,11 +120,9 @@ export function HeadSupervisorDashboard({ onNavigateTab }: DashboardNavProps = {
           const approvedTasks = assignedTrips.filter((a) => a.status === 'TASK_COMPLETED');
           const hasFleet = approvedTrips.length > 0 || approvedTasks.length > 0;
           if (!hasFleet) return null;
-          const completedTrips = trips.filter((tr) => tr.status === 'completed');
-          const completedSessions = machineSessions.filter((m) => m.status === 'completed');
-          const totalFuel = completedTrips.reduce((s, tr) => s + (tr.fuelConsumed ?? 0), 0) + completedSessions.reduce((s, m) => s + (m.fuelConsumed ?? 0), 0);
-          const totalDistance = completedTrips.reduce((s, tr) => s + (tr.distanceKm ?? 0), 0);
-          const totalHours = completedSessions.reduce((s, m) => s + (m.durationHours ?? 0), 0);
+          const totalFuel = [...approvedTrips, ...approvedTasks].reduce((s, a) => s + (a.fuelUsedL ?? 0), 0);
+          const totalDistance = approvedTrips.reduce((s, a) => s + (a.distanceKm ?? 0), 0);
+          const totalHours = approvedTasks.reduce((s, a) => s + (a.hoursUsed ?? 0), 0);
           return (
             <Card style={[hsStyles.quickCard, { marginBottom: layout.cardSpacingVertical }]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
@@ -136,7 +134,12 @@ export function HeadSupervisorDashboard({ onNavigateTab }: DashboardNavProps = {
                 <Text style={hsStyles.statLabel}>{t('dashboard_fleet_total_distance')}: {totalDistance.toFixed(0)} km</Text>
                 <Text style={hsStyles.statLabel}>{t('dashboard_fleet_total_hours')}: {totalHours.toFixed(1)} h</Text>
               </View>
-              <Text style={[hsStyles.statLabel, { marginTop: 4, fontSize: 11 }]}>{t('dashboard_fleet_approved_by_as')}</Text>
+              <Text style={[hsStyles.statLabel, { marginTop: 4, fontSize: 11 }]}>
+                {t('dashboard_fleet_approved_counts')
+                  .replace('{trips}', String(approvedTrips.length))
+                  .replace('{tasks}', String(approvedTasks.length))}
+              </Text>
+              <Text style={[hsStyles.statLabel, { marginTop: 2, fontSize: 11 }]}>{t('dashboard_fleet_approved_by_as')}</Text>
             </Card>
           );
         })()}

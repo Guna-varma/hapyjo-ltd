@@ -82,8 +82,8 @@ function useTopSafeInset(): number {
 
 export function AppNavigation() {
   const { user, logout } = useAuth();
-  const { t, locale } = useLocale();
-  const { refetch, loading, notifications } = useMockAppStore();
+  const { t } = useLocale();
+  const { refetch, loading, unreadNotificationCount } = useMockAppStore();
   const topInset = useTopSafeInset();
   const insets = useSafeAreaInsets();
   const theme = useResponsiveTheme();
@@ -93,6 +93,18 @@ export function AppNavigation() {
   );
   const navigate = useNavigate();
   const location = useLocation();
+  /**
+   * Six or more tabs on a phone narrower than 360px: the bar scrolls, and only
+   * the active tab shows its label so every tab stays visible at a glance.
+   */
+  const compactTabLabels = theme.width < 360 && tabIds.length >= 6;
+  const roleLabel = user ? t(`role_${user.role}`) : '';
+  const userInitials = (user?.name ?? '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('');
 
   /**
    * The URL is the source of truth for the active tab, so refresh, Back/Forward and
@@ -216,11 +228,14 @@ export function AppNavigation() {
     const Icon = tab.icon;
     const isActive = activeTab === tab.id;
     const isSidebar = layout === 'sidebar';
+    const showLabel = isSidebar || !compactTabLabels || isActive;
     return (
       <TouchableOpacity
         key={tab.id}
         onPress={() => { Haptics.selectionAsync(); setActiveTab(tab.id); }}
         activeOpacity={0.75}
+        accessibilityRole="tab"
+        accessibilityLabel={tab.label}
         accessibilityState={{ selected: isActive }}
         style={{
           // Sidebar lays the icon and label out in a row; the bar stacks them.
@@ -230,7 +245,7 @@ export function AppNavigation() {
           gap: isSidebar ? 12 : 0,
           paddingVertical: 8,
           paddingHorizontal: 12,
-          minWidth: isSidebar ? undefined : theme.tabItemMinWidth,
+          minWidth: isSidebar ? undefined : compactTabLabels && !isActive ? dimensions.minTouchHeight : theme.tabItemMinWidth,
           minHeight: dimensions.minTouchHeight,
           backgroundColor: isActive ? colors.blue50 : 'transparent',
           borderRadius: 12,
@@ -241,17 +256,21 @@ export function AppNavigation() {
           color={isActive ? colors.primary : colors.gray500}
           strokeWidth={isActive ? 2.5 : 2}
         />
-        <Text
-          style={{
-            fontSize: isSidebar ? 14 : theme.tabLabelSize,
-            marginTop: isSidebar ? 0 : theme.spacingXs,
-            fontWeight: '500',
-            color: isActive ? colors.primary : colors.gray600,
-          }}
-          numberOfLines={1}
-        >
-          {tab.label}
-        </Text>
+        {showLabel ? (
+          <Text
+            style={{
+              fontSize: isSidebar ? 14 : theme.tabLabelSize,
+              marginTop: isSidebar ? 0 : theme.spacingXs,
+              fontWeight: '500',
+              color: isActive ? colors.primary : colors.gray600,
+              // The scrolling bar sizes each tab to its label; never ellipsise it.
+              flexShrink: 0,
+            }}
+            numberOfLines={1}
+          >
+            {tab.label}
+          </Text>
+        ) : null}
       </TouchableOpacity>
     );
   };
@@ -292,6 +311,44 @@ export function AppNavigation() {
             }}
           >
             {visibleTabs.map((tab) => renderTabButton(tab, 'sidebar'))}
+            {/* Who is signed in — the mobile layout shows this in the dashboard headline. */}
+            {user ? (
+              <View
+                style={{
+                  marginTop: 'auto',
+                  paddingTop: theme.spacingMd,
+                  borderTopWidth: 1,
+                  borderTopColor: colors.border,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                  paddingHorizontal: 8,
+                }}
+                accessibilityLabel={`${t('sidebar_signed_in_as')} ${user.name}, ${roleLabel}`}
+              >
+                <View
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    backgroundColor: colors.blue50,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Text style={{ color: colors.primary, fontWeight: '700', fontSize: 13 }}>{userInitials || '•'}</Text>
+                </View>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text }} numberOfLines={1}>
+                    {user.name}
+                  </Text>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary }} numberOfLines={1}>
+                    {roleLabel}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
           </View>
         ) : null}
 
@@ -334,18 +391,20 @@ export function AppNavigation() {
             {refreshing || loading ? (
               <ActivityIndicator size="small" color={colors.primary} />
             ) : (
-              <RefreshCw size={20} color={colors.primary} />
+              <>
+                <RefreshCw size={20} color={colors.primary} />
+                <Text
+                  style={{
+                    color: colors.primary,
+                    fontWeight: '600',
+                    fontSize: 14,
+                    marginLeft: 6,
+                  }}
+                >
+                  {t('common_refresh')}
+                </Text>
+              </>
             )}
-            <Text
-              style={{
-                color: refreshing || loading ? colors.textMuted : colors.primary,
-                fontWeight: '600',
-                fontSize: 14,
-                marginLeft: 6,
-              }}
-            >
-              {refreshing || loading ? t('common_loading') : t('common_refresh')}
-            </Text>
           </TouchableOpacity>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <TouchableOpacity
@@ -354,10 +413,10 @@ export function AppNavigation() {
               accessibilityLabel={t('settings_notifications')}
             >
               <Bell size={22} color={colors.gray600} />
-              {notifications.filter((n) => !n.read).length > 0 && (
+              {unreadNotificationCount > 0 && (
                 <View style={{ position: 'absolute', top: 4, right: 4, minWidth: 16, height: 16, borderRadius: 8, backgroundColor: colors.error, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 }}>
                   <Text style={{ color: colors.surface, fontSize: 10, fontWeight: '700' }}>
-                    {notifications.filter((n) => !n.read).length > 99 ? '99+' : notifications.filter((n) => !n.read).length}
+                    {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
                   </Text>
                 </View>
               )}
@@ -369,7 +428,6 @@ export function AppNavigation() {
           </View>
         </View>
         <View
-          key={locale}
           style={{
             flex: 1,
             minHeight: 0,

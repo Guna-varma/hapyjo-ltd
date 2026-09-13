@@ -232,10 +232,14 @@ export interface MockAppStoreContextValue extends MockAppStoreState {
   addReport: (report: Report) => Promise<void>;
   updateReport: (id: string, patch: Partial<Report>) => Promise<void>;
   notifications: Notification[];
+  /** Exact number of unread notifications for this user (not capped by the 50-row list). */
+  unreadNotificationCount: number;
   addNotification: (
     n: Omit<Notification, "createdAt" | "read">
   ) => Promise<void>;
   markNotificationRead: (id: string) => Promise<void>;
+  /** Marks every unread notification visible to this user as read. */
+  markAllNotificationsRead: () => Promise<void>;
   /** Hard-delete all notifications for current user's role (clear all). */
   clearAllNotifications: () => Promise<void>;
   cleanupExpiredAssignedTripEvidence: () => Promise<void>;
@@ -297,6 +301,7 @@ function useSupabaseStore(): MockAppStoreContextValue {
   const authUserId = authUser?.id ?? null;
   const [state, setState] = useState<MockAppStoreState>(emptyState);
   const [loading, setLoading] = useState(true);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const currentUserRoleRef = useRef<string | null>(null);
   const lastRefetchAtRef = useRef<number>(0);
@@ -348,6 +353,32 @@ function useSupabaseStore(): MockAppStoreContextValue {
           const row = expenseToRow(item.payload as Partial<Expense>);
           const { error } = await supabase.from("expenses").insert(row);
           if (error) remaining.push(item);
+        } else if (item.type === "survey") {
+          const survey = item.payload as unknown as Survey;
+          const { error } = await supabase.from("surveys").insert(surveyToRow(survey));
+          if (error) {
+            remaining.push(item);
+          } else {
+            const rows = buildNotificationRows(
+              "survey_submitted",
+              { ...survey, siteName: item.siteName },
+              () => generateId("n")
+            );
+            for (const r of rows) await supabase.from("notifications").insert(r);
+          }
+        } else if (item.type === "issue") {
+          const issue = item.payload as unknown as Issue;
+          const { error } = await supabase.from("issues").insert(issueToRow(issue));
+          if (error) {
+            remaining.push(item);
+          } else {
+            const rows = buildNotificationRows(
+              "issue_raised",
+              { ...issue, siteName: item.siteName },
+              () => generateId("n")
+            );
+            for (const r of rows) await supabase.from("notifications").insert(r);
+          }
         } else {
           const row = tripToRow(item.payload as Partial<Trip>);
           const { error } = await supabase.from("trips").insert(row);
@@ -504,6 +535,13 @@ function useSupabaseStore(): MockAppStoreContextValue {
           notifications = (notifRes.data ?? []).map((r) =>
             notificationFromRow(r as Record<string, unknown>)
           );
+          // The list is capped at 50 rows; the badge needs the real unread total.
+          const { count } = await supabase
+            .from("notifications")
+            .select("id", { count: "exact", head: true })
+            .eq("target_role", currentUserRole)
+            .eq("read", false);
+          setUnreadNotificationCount(count ?? 0);
         } catch {
           // Table may not exist until migration 20250223100000_notifications is run
         }
@@ -1259,9 +1297,20 @@ function useSupabaseStore(): MockAppStoreContextValue {
   const addSurvey = useCallback(
     async (survey: Survey) => {
       const row = surveyToRow(survey);
-      const { error } = await supabase.from("surveys").insert(row);
-      if (error) throw error;
       const siteName = state.sites.find((s) => s.id === survey.siteId)?.name;
+      const { error } = await supabase.from("surveys").insert(row);
+      if (error) {
+        // A survey is a plain row, so a connection failure can be queued and
+        // sent when the app is next online. Rejections still surface.
+        if (!isNetworkError(error)) throw error;
+        await appendToOfflineQueue({
+          type: "survey",
+          payload: survey as unknown as Record<string, unknown>,
+          siteName,
+        });
+        setSurveys((prev) => [survey, ...prev]);
+        return;
+      }
       const surveyRows = buildNotificationRows(
         "survey_submitted",
         { ...survey, siteName },
@@ -1281,19 +1330,35 @@ function useSupabaseStore(): MockAppStoreContextValue {
       if (Object.keys(row).length === 0) return;
       const { error } = await supabase.from("surveys").update(row).eq("id", id);
       if (error) throw error;
-      if (patch.status === "approved") {
+      if (patch.status === "approved" || patch.status === "rejected") {
         const survey = state.surveys.find((s) => s.id === id);
         if (survey) {
           const siteName = state.sites.find(
             (s) => s.id === survey.siteId
           )?.name;
-          const approvedRows = buildNotificationRows(
-            "survey_approved",
+          const approved = patch.status === "approved";
+          // Management gets the role-wide row; the surveyor who did the work
+          // gets a personal one (also for rejections, so they hear about it
+          // even when the app is closed).
+          const rows = buildNotificationRows(
+            approved ? "survey_approved" : "survey_rejected",
             { ...survey, ...patch, siteName },
             () => generateId("n")
           );
-          for (const r of approvedRows)
+          for (const r of rows)
             await supabase.from("notifications").insert(r);
+          const scenario = getScenario(approved ? "survey_approved" : "survey_rejected");
+          const payload = { ...survey, ...patch, siteName } as Record<string, unknown>;
+          const personal = buildNotificationRowForUser(
+            "surveyor",
+            survey.surveyorId,
+            scenario.getTitle(payload),
+            scenario.getBody(payload),
+            () => generateId("n"),
+            survey.id,
+            "survey"
+          );
+          await supabase.from("notifications").insert(personal);
         }
       }
       await refetch();
@@ -1320,9 +1385,21 @@ function useSupabaseStore(): MockAppStoreContextValue {
         createdByRole: role,
       };
       const row = issueToRow(issueWithRole);
-      const { error } = await supabase.from("issues").insert(row);
-      if (error) throw error;
       const siteName = state.sites.find((s) => s.id === issue.siteId)?.name;
+      const { error } = await supabase.from("issues").insert(row);
+      if (error) {
+        // Text-only issues can wait for a connection; one with photos cannot
+        // (the uploads already failed), so the caller keeps its form open.
+        const hasPhotos = (issueWithRole.imageUris?.length ?? 0) > 0;
+        if (!isNetworkError(error) || hasPhotos) throw error;
+        await appendToOfflineQueue({
+          type: "issue",
+          payload: issueWithRole as unknown as Record<string, unknown>,
+          siteName,
+        });
+        setState((prev) => ({ ...prev, issues: [issueWithRole, ...prev.issues] }));
+        return;
+      }
       const rows = buildNotificationRows(
         "issue_raised",
         { ...issueWithRole, siteName },
@@ -2048,6 +2125,24 @@ function useSupabaseStore(): MockAppStoreContextValue {
     [refetch]
   );
 
+  const markAllNotificationsRead = useCallback(async () => {
+    const role = state.users.find((u) => u.id === authUser?.id)?.role;
+    if (!role) return;
+    // Optimistic: the badge and list clear at once; the refetch confirms.
+    setState((prev) => ({
+      ...prev,
+      notifications: prev.notifications.map((n) => (n.read ? n : { ...n, read: true })),
+    }));
+    setUnreadNotificationCount(0);
+    const { error } = await supabase
+      .from("notifications")
+      .update({ read: true })
+      .eq("target_role", role)
+      .eq("read", false);
+    if (error) throw error;
+    await refetch();
+  }, [authUser?.id, state.users, refetch]);
+
   const clearAllNotifications = useCallback(async () => {
     const role = state.users.find((u) => u.id === authUser?.id)?.role;
     if (!role) return;
@@ -2093,6 +2188,7 @@ function useSupabaseStore(): MockAppStoreContextValue {
     () => ({
       ...state,
       loading,
+      unreadNotificationCount,
       setSites,
       setVehicles,
       setExpenses,
@@ -2139,12 +2235,14 @@ function useSupabaseStore(): MockAppStoreContextValue {
       updateReport,
       addNotification,
       markNotificationRead,
+      markAllNotificationsRead,
       clearAllNotifications,
       cleanupExpiredAssignedTripEvidence,
     }),
     [
       state,
       loading,
+      unreadNotificationCount,
       setSites,
       setVehicles,
       setExpenses,
@@ -2191,6 +2289,7 @@ function useSupabaseStore(): MockAppStoreContextValue {
       updateReport,
       addNotification,
       markNotificationRead,
+      markAllNotificationsRead,
       clearAllNotifications,
       cleanupExpiredAssignedTripEvidence,
     ]
@@ -2210,6 +2309,16 @@ export function MockAppStoreProvider({
       {children}
     </MockAppStoreContext.Provider>
   );
+}
+
+/**
+ * Store loading flag for components that may render outside the provider
+ * (returns false there). Used by EmptyState so an empty message is never shown
+ * while the first load is still in flight.
+ */
+export function useStoreLoading(): boolean {
+  const ctx = useContext(MockAppStoreContext);
+  return ctx?.loading ?? false;
 }
 
 export function useMockAppStore(): MockAppStoreContextValue {

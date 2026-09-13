@@ -176,6 +176,37 @@ body {
   }
 }
 
+/* Transparent modals: the overlay is painted immediately and only the sheet
+   moves, so the page never shows through the dialog while it opens. */
+@keyframes fo-modal-sheet-fade {
+  from {
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes fo-modal-sheet-slide {
+  from {
+    transform: translateY(28px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.fo-modal-transparent[data-anim='fade'] .fo-modal-sheet {
+  animation: fo-modal-sheet-fade 0.18s ease-out;
+}
+.fo-modal-transparent[data-anim='slide'] .fo-modal-sheet {
+  animation: fo-modal-sheet-slide 0.22s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fo-modal-transparent .fo-modal-sheet,
+  .fo-modal {
+    animation: none !important;
+  }
+}
+
 /* SkeletonLoader shimmer */
 @keyframes fo-pulse {
   0%,
@@ -315,10 +346,16 @@ body {
   }
 }
 
-/* ---- Pointer devices: hover affordance on tappable rows ---- */
+/* ---- Pointer devices: hover affordance on tappable rows ----
+   Never via opacity: modal overlays and sheets are themselves touchables
+   (Pressable/TouchableWithoutFeedback), and an opacity hover made the whole
+   dialog translucent so the page bled through it. A brightness filter darkens
+   the control slightly without revealing anything behind it. Containers that
+   hold other touchables (overlays, sheets, list rows with buttons) get no
+   hover effect at all. */
 @media (hover: hover) and (pointer: fine) {
-  .fo-app .fo-touchable:hover:not([aria-disabled='true']) {
-    opacity: 0.85;
+  .fo-app .fo-touchable:hover:not([aria-disabled='true']):not(:has(.fo-touchable)) {
+    filter: brightness(0.96);
   }
 }
 

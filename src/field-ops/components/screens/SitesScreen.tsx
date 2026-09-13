@@ -141,7 +141,7 @@ export function SitesScreen() {
         status: 'active',
         startDate,
         expectedEndDate: expectedEndDate || undefined,
-        budget: budget > 0 ? budget : 1000000,
+        budget,
         spent: 0,
         progress: 0,
       });
@@ -281,6 +281,7 @@ export function SitesScreen() {
           placeholder={t('sites_budget_placeholder')}
           keyboardType="number-pad"
         />
+        <Text style={styles.budgetHint}>{t('sites_initial_budget_hint')}</Text>
       </FormModal>
 
       <FormModal
@@ -359,6 +360,12 @@ const styles = StyleSheet.create({
   allocateBtnText: {
     color: colors.surface,
     fontWeight: '600',
+  },
+  budgetHint: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: -4,
+    marginBottom: spacing.sm,
   },
   createCard: {
     marginBottom: spacing.lg,

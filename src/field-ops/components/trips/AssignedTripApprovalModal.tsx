@@ -131,6 +131,7 @@ export function AssignedTripApprovalModal({
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
           <View style={{ marginBottom: 16 }}>
             <Text style={{ fontSize: 14, fontWeight: '600', color: '#64748b', marginBottom: 8 }}>{t('trip_approval_photos')}</Text>
+            <Text style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>{t('trip_detail_photo_retention')}</Text>
             <View style={{ flexDirection: 'row', gap: 12 }}>
               {startPhotoUrl ? (
                 <View style={{ flex: 1 }}>

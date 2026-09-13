@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { formatDateTime } from '@/field-ops/lib/dateFormat';
 import { Alert, Haptics, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from '@/field-ops/components/primitives';
 import {
   Header,
@@ -601,9 +602,9 @@ export function VehiclesScreen() {
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_driver')}</Text>
                         <Text style={styles.specValue}>{driver?.name ?? trip.driverId}</Text>
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_start_time')}</Text>
-                        <Text style={styles.specValue}>{trip.startTime ? new Date(trip.startTime).toLocaleString() : '—'}</Text>
+                        <Text style={styles.specValue}>{formatDateTime(trip.startTime)}</Text>
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_end_time')}</Text>
-                        <Text style={styles.specValue}>{trip.endTime ? new Date(trip.endTime).toLocaleString() : '—'}</Text>
+                        <Text style={styles.specValue}>{formatDateTime(trip.endTime)}</Text>
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_duration')}</Text>
                         <Text style={styles.specValue}>{durationH > 0 ? `${durationH.toFixed(1)} h` : '—'}</Text>
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_distance')}</Text>
@@ -632,9 +633,9 @@ export function VehiclesScreen() {
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_driver')}</Text>
                         <Text style={styles.specValue}>{driver?.name ?? session.driverId}</Text>
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_start_time')}</Text>
-                        <Text style={styles.specValue}>{session.startTime ? new Date(session.startTime).toLocaleString() : '—'}</Text>
+                        <Text style={styles.specValue}>{formatDateTime(session.startTime)}</Text>
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_end_time')}</Text>
-                        <Text style={styles.specValue}>{session.endTime ? new Date(session.endTime).toLocaleString() : '—'}</Text>
+                        <Text style={styles.specValue}>{formatDateTime(session.endTime)}</Text>
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_duration')}</Text>
                         <Text style={styles.specValue}>{(session.durationHours ?? 0) > 0 ? `${(session.durationHours ?? 0).toFixed(1)} h` : '—'}</Text>
                         <Text style={[styles.specLabel, { marginTop: 8 }]}>{t('trip_detail_fuel')}</Text>
